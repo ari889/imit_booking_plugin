@@ -181,8 +181,9 @@ add_shortcode('imit-booking', function(){
                 <div class="collapse navbar-collapse" id="navbarTogglerDemo02" style="flex-grow: 0;">
                     <?php wp_nav_menu([
                             'theme_location' => 'imit_menu',
-                            'menu_class' => 'navbar-nav ms-auto text-center plugin-default',
-                            'menu_id' => ''
+                            'menu_class' => 'navbar-nav ms-auto mb-2 p-0 mb-lg-0 text-center plugin-default',
+                            'menu_id' => '',
+                            'fallback_cb' => 'imit_default_menu'
                     ]); ?>
                 </div>
             </div>
@@ -215,7 +216,7 @@ add_shortcode('imit-booking', function(){
 
                     <p class="subtitle mt-3">Over 50% of our patients have too!</p>
 
-                    <button type="button" class="next" id="next-1">Next</button>
+                    <button type="button" class="next border-0" id="next-1">Next</button>
                 </div>
 
                 <!--                ==========================page 2 ==================-->
@@ -242,7 +243,7 @@ add_shortcode('imit-booking', function(){
 
                     <p class="subtitle mt-3">We want to help you with that!</p>
 
-                    <button type="button" class="next" id="next-2">Next</button>
+                    <button type="button" class="next border-0" id="next-2">Next</button>
                 </div>
 
                 <!--                ========================page 3 ======================-->
@@ -269,7 +270,7 @@ add_shortcode('imit-booking', function(){
 
                     <p class="subtitle mt-3">Lucky for you, our orthodontists have years of experience!</p>
 
-                    <button type="button" class="next" id="next-3">Next</button>
+                    <button type="button" class="next border-0" id="next-3">Next</button>
                 </div>
 
                 <!--                ============================= page 4 =========================-->
@@ -289,7 +290,7 @@ add_shortcode('imit-booking', function(){
                         </div>
                     </div>
 
-                    <button type="button" class="next" id="next-4">Next</button>
+                    <button type="button" class="next border-0" id="next-4">Next</button>
                 </div>
 
                 <!--                ========================= page 5 ========================-->
@@ -304,7 +305,7 @@ add_shortcode('imit-booking', function(){
                         </div>
                     </div>
 
-                    <button type="button" class="next" id="next-5">Next</button>
+                    <button type="button" class="next border-0" id="next-5">Next</button>
                 </div>
 
                 <!--                ====================== page 6 ====================-->
@@ -319,7 +320,7 @@ add_shortcode('imit-booking', function(){
                         </div>
                     </div>
 
-                    <button type="button" class="next" id="next-6">Next</button>
+                    <button type="button" class="next border-0" id="next-6">Next</button>
                 </div>
 
                 <!--                ======================== page 7 =======================-->
@@ -341,7 +342,7 @@ add_shortcode('imit-booking', function(){
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="next" id="next-7">Next</button>
+                    <button type="button" class="next border-0" id="next-7">Next</button>
                 </div>
 
                 <!--                ============================ page 8 ====================-->
@@ -378,7 +379,7 @@ add_shortcode('imit-booking', function(){
                         <input type="text" name="referred_by" id="name-event" placeholder="Enter name of the event">
                     </div>
 
-                    <button type="submit" class="next" id="submit">Submit</button>
+                    <button type="submit" class="next border-0" id="submit">Submit</button>
                 </div>
 
 
@@ -386,13 +387,6 @@ add_shortcode('imit-booking', function(){
             </form>
         </div>
     </section>
-    <div class="modal fade" id="booking_success">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-
-            </div>
-        </div>
-    </div>
     <?php
     return ob_get_clean();
 });
@@ -820,6 +814,13 @@ add_action('admin_menu', function(){
     add_submenu_page('imitAppointmentBooking', 'Booking option', 'Booking option', 'manage_options', 'imitBookingCog', 'manage_booking_cog');
 });
 
+/**
+ * imit default menu
+ */
+function imit_default_menu(){
+    echo 'Please add a menu';
+}
+
 
 /**
  * see user appointment status from backend
@@ -852,7 +853,9 @@ add_shortcode('imit-manage-my-appointment', function(){
                 <div class="collapse navbar-collapse" id="navbarTogglerDemo02" style="flex-grow: 0;">
                     <?php wp_nav_menu([
                         'theme_location' => 'imit_menu',
-                        'menu_class' => 'navbar-nav ms-auto mb-2 mb-lg-0 text-center plugin-default'
+                        'menu_class' => 'navbar-nav ms-auto mb-2 p-0 mb-lg-0 text-center plugin-default',
+                        'menu_id' => '',
+                        'fallback_cb' => 'imit_default_menu'
                     ]); ?>
                 </div>
             </div>

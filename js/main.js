@@ -276,26 +276,29 @@
                    type: 'POST',
                    data: {action:'imit_booking', braces:braces, straighten:straighten, straightening:straightening, first_name:first_name, last_name:last_name, email:email, event_time:event_time, referral_name:referral_name, event_date:eventDate, location:location, referred_by:referred_by, cell:cell, nonce:imitPluginData.imit_nonce},
                    success:function(data){
-                       $('.content').css('margin-left', '0%');
                        $('#booking_form input[name="first_name"]').val('');
                        $('#booking_form input[name="last_name"]').val('');
                        $('#booking_form input[name="email"]').val('');
                        $('#booking_form input[name="referred_by"]').val('');
                        $('#booking_form input[name="cell"]').val('');
-                       $('#booking-message8').fadeOut('fast');
+                       $('#booking-message8').html('<div class="alert alert-success alert-dismissible fade show" role="alert">\n' +
+                           '  <strong>Success!</strong> Your appintment has been booked.\n' +
+                           '  <button type="button" class="btn btn-white" data-bs-dismiss="alert" aria-label="Close" id="form-close">Ok</button>\n' +
+                           '</div>').fadeIn('fast');
                        eventDate = new Date();
                        available_time(eventDate);
-                       $('#booking_success .modal-content').html('<div class="modal-header">\n' +
-                           '                    <h3 class="m-0">Hi <strong>'+first_name+' '+last_name+'</strong></h3>\n' +
-                           '                </div>\n' +
-                           '                <div class="modal-body">\n' +
-                           '                    <p>Your appointment has been booked. Please check your email for more information.</p>\n' +
-                           '                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" aria-label="Close">Ok</button>\n' +
-                           '                </div>');
-                       $('#booking_success').modal('show');
+                       selectDate(String(eventDate));
                    }
                });
            }
+        });
+
+        /**
+         * if user click form close button then reset form
+         */
+        $(document).on('click', '#form-close', function(e){
+            e.preventDefault();
+            $('.content').css('margin-left', '0%');
         });
 
         /**
