@@ -1,0 +1,265 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  list-style: none; }
+
+@font-face {
+  src: url("../fonts/MessinaSerif-Regular.ttf");
+  font-family: MessinaSerif-Regular; }
+/**
+sass value
+ */
+.header .back {
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  color: #a1a9ae;
+  transition: 0.3s;
+  text-transform: uppercase;
+  font-family: "Poppins", sans-serif; }
+  .header .back:hover {
+    color: #000; }
+.header .manage {
+  color: #194f5b;
+  font-size: 16px;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif; }
+  .header .manage i {
+    margin-right: 10px; }
+  .header .manage:hover {
+    text-decoration: none; }
+
+.event-management .content-area {
+  overflow: hidden; }
+  .event-management .content-area .content {
+    width: 800%;
+    transition: margin-left 0.3s ease-in-out; }
+    .event-management .content-area .content .page {
+      min-height: calc(100vh - 64px);
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      width: 100%; }
+      .event-management .content-area .content .page .title {
+        font-size: 50px;
+        line-height: 60px;
+        font-weight: 400;
+        font-family: MessinaSerif-Regular !important; }
+        @media only screen and (max-width: 443px) {
+          .event-management .content-area .content .page .title {
+            font-size: 25px;
+            line-height: 30px; } }
+      .event-management .content-area .content .page .label-button label {
+        font-size: 24px;
+        margin: 16px;
+        font-weight: 500;
+        outline: 0;
+        border: 1px solid #cecece;
+        cursor: pointer;
+        transition: box-shadow 0.3s;
+        background-color: #fff;
+        padding: 10px 50px;
+        font-family: "Poppins", sans-serif !important; }
+        @media only screen and (max-width: 349px) {
+          .event-management .content-area .content .page .label-button label {
+            font-size: 16px;
+            padding: 10px 30px; } }
+        .event-management .content-area .content .page .label-button label:hover {
+          box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15);
+          -webkit-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15);
+          -moz-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15); }
+      .event-management .content-area .content .page .label-button input[type="radio"]:checked ~ label {
+        border: 3px solid #357f9e;
+        color: #357f9e; }
+      .event-management .content-area .content .page .subtitle {
+        font-size: 16px;
+        font-weight: 400;
+        font-family: "Poppins", sans-serif !important; }
+      .event-management .content-area .content .page .next {
+        color: #fff;
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 20px;
+        letter-spacing: 2px;
+        margin: 16px;
+        background: #357f9e;
+        outline: none;
+        cursor: pointer;
+        -webkit-transition: all .2s;
+        transition: all .2s;
+        padding: 10px 50px;
+        font-family: MessinaSerif-Regular !important; }
+        .event-management .content-area .content .page .next:hover {
+          box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15);
+          -webkit-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15);
+          -moz-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15); }
+      .event-management .content-area .content .page .text-input {
+        margin: 0 10px; }
+        .event-management .content-area .content .page .text-input label {
+          display: block;
+          font-size: 16px;
+          text-align: left; }
+        .event-management .content-area .content .page .text-input input[type="text"] {
+          margin: 24px 0 0;
+          color: #194f5b;
+          min-height: 56px;
+          padding: 12px 14px;
+          font-size: 20px;
+          line-height: 28px;
+          font-weight: 400;
+          font-family: "Poppins", sans-serif !important; }
+        .event-management .content-area .content .page .text-input select {
+          font-size: 20px;
+          line-height: 28px;
+          margin: 24px 0 0;
+          min-height: 56px;
+          padding: 12px 14px;
+          color: #467179; }
+      .event-management .content-area .content .page .email-input label {
+        font-size: 24px;
+        text-align: left;
+        color: #467179;
+        margin-right: 20px; }
+      .event-management .content-area .content .page .email-input input[type="text"] {
+        margin: 24px 0 0;
+        color: #194f5b;
+        min-height: 56px;
+        padding: 12px 14px;
+        font-size: 20px;
+        line-height: 28px;
+        font-weight: 400; }
+      .event-management .content-area .content .page .location {
+        position: relative;
+        overflow: hidden; }
+        .event-management .content-area .content .page .location:not(:first-child):not(:last-child) {
+          margin: 0 10px; }
+          @media only screen and (max-width: 767px) {
+            .event-management .content-area .content .page .location:not(:first-child):not(:last-child) {
+              margin: 10px 0; } }
+        .event-management .content-area .content .page .location label {
+          position: relative;
+          z-index: 100;
+          max-width: 200px;
+          min-height: 250px;
+          border: 1px solid #cecece;
+          padding: 20px;
+          transition: 0.3s;
+          cursor: pointer;
+          font-size: 16px !important;
+          font-family: "Poppins", sans-serif; }
+          .event-management .content-area .content .page .location label:hover {
+            background-color: #ddd; }
+        .event-management .content-area .content .page .location input[type="radio"]:checked ~ label {
+          background-color: #357f9e;
+          color: #fff; }
+        .event-management .content-area .content .page .location img {
+          position: absolute;
+          top: 20px;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 50; }
+
+/**
+* for calender
+ */
+.calendar-box {
+  font-family: "Poppins", sans-serif; }
+
+.buttons-container {
+  cursor: pointer; }
+
+.week {
+  overflow: hidden; }
+
+.week.highlight {
+  background: #efefef; }
+
+/* weekend */
+.week .day:first-child, .week .day:last-child {
+  /*color: orange;*/ }
+
+/* sunday */
+.week .day:first-child {
+  /*color: red;*/ }
+
+.day {
+  display: inline-block;
+  float: left;
+  width: 14.28%;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box; }
+
+.day.disabled span {
+  color: #AAA; }
+
+/* vertical highlight */
+.week .day.highlight span {
+  /*color: blue;*/ }
+
+.day.selected span {
+  /*background: orange;*/ }
+
+.day.today span {
+  font-weight: bold; }
+
+.months-container.hidden, .weeks-container.hidden {
+  display: none; }
+
+.months-wrapper {
+  overflow: hidden; }
+
+.months-wrapper .month {
+  display: inline-block;
+  float: left;
+  width: 25%;
+  text-align: center;
+  cursor: pointer; }
+
+.months-wrapper .month.one-third {
+  width: 33.33%; }
+
+.available-time .radio-button {
+  display: inline-block; }
+  .available-time .radio-button label {
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    color: #000;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: "Poppins", sans-serif !important; }
+    .available-time .radio-button label:hover {
+      background-color: #ddd; }
+  .available-time .radio-button input[type="radio"]:checked ~ label {
+    background-color: #357f9e;
+    color: #fff; }
+
+.calendar-wrapper .prev-button {
+  color: #000 !important; }
+  .calendar-wrapper .prev-button:hover {
+    color: #fff !important; }
+.calendar-wrapper .next-button {
+  color: #000 !important; }
+  .calendar-wrapper .next-button:hover {
+    color: #fff !important; }
+
+.plugin-default li {
+  margin-right: 10px; }
+  @media only screen and (max-width: 575px) {
+    .plugin-default li {
+      margin-right: 0; } }
+  .plugin-default li:last-child {
+    margin-right: 0; }
+  .plugin-default li a {
+    color: #194f5b;
+    font-size: 16px;
+    font-family: "Poppins", sans-serif;
+    text-transform: uppercase;
+    font-weight: bold; }
+    .plugin-default li a:hover {
+      color: #357f9e; }

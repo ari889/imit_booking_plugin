@@ -1,0 +1,338 @@
+*{
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  list-style: none;
+}
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@font-face{
+  src: url("../fonts/MessinaSerif-Regular.ttf");
+  font-family: MessinaSerif-Regular;
+}
+
+/**
+sass value
+ */
+$regular : MessinaSerif-Regular;
+$poppines: 'Poppins', sans-serif;
+$primary-color: #357f9e;
+$secondery-color: #47aed6;
+
+.header{
+  .back{
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    color: #a1a9ae;
+    transition: 0.3s;
+    text-transform: uppercase;
+    font-family: $poppines;
+    &:hover{
+      color: #000;
+    }
+  }
+  .manage{
+    color: #194f5b;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-family: $poppines;
+    i{
+      margin-right: 10px;
+    }
+    &:hover{
+      text-decoration: none;
+    }
+  }
+}
+
+.event-management{
+  .content-area{
+    overflow: hidden;
+    .content{
+      width: 800%;
+      transition: margin-left 0.3s ease-in-out;
+      .page{
+        min-height: calc(100vh - 64px);
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        .title{
+          font-size: 50px;
+          line-height: 60px;
+          font-weight: 400;
+          font-family: $regular !important;
+          @media only screen and (max-width: 443px){
+            font-size: 25px;
+            line-height: 30px;
+          }
+        }
+        .label-button{
+          label{
+            font-size: 24px;
+            margin: 16px;
+            font-weight: 500;
+            outline: 0;
+            border: 1px solid #cecece;
+            cursor: pointer;
+            transition: box-shadow 0.3s;
+            background-color: #fff;
+            padding: 10px 50px;
+            font-family: $poppines !important;
+            @media only screen and (max-width: 349px){
+              font-size: 16px;
+              padding: 10px 30px;
+            }
+            &:hover{
+              box-shadow: 4px 4px 5px 0px rgba(0,0,0,0.15);
+              -webkit-box-shadow: 4px 4px 5px 0px rgba(0,0,0,0.15);
+              -moz-box-shadow: 4px 4px 5px 0px rgba(0,0,0,0.15);
+            }
+          }
+          input[type="radio"]:checked ~ label{
+            border: 3px solid $primary-color;
+            color: $primary-color;
+          }
+        }
+        .subtitle{
+          font-size: 16px;
+          font-weight: 400;
+          font-family: $poppines !important;
+        }
+        .next{
+          color: #fff;
+          text-transform: uppercase;
+          font-weight: 600;
+          font-size: 20px;
+          letter-spacing: 2px;
+          margin: 16px;
+          background: $primary-color;
+          outline: none;
+          cursor: pointer;
+          -webkit-transition: all .2s;
+          transition: all .2s;
+          padding: 10px 50px;
+          font-family: $regular !important;
+          &:hover{
+            box-shadow: 4px 4px 5px 0px rgba(0,0,0,0.15);
+            -webkit-box-shadow: 4px 4px 5px 0px rgba(0,0,0,0.15);
+            -moz-box-shadow: 4px 4px 5px 0px rgba(0,0,0,0.15);
+          }
+        }
+        .text-input{
+          margin: 0 10px;
+          label{
+            display: block;
+            font-size: 16px;
+            text-align: left;
+          }
+          input[type="text"]{
+            margin: 24px 0 0;
+            color: #194f5b;
+            min-height: 56px;
+            padding: 12px 14px;
+            font-size: 20px;
+            line-height: 28px;
+            font-weight: 400;
+            font-family: $poppines !important;
+          }
+          select{
+            font-size: 20px;
+            line-height: 28px;
+            margin: 24px 0 0;
+            min-height: 56px;
+            padding: 12px 14px;
+            color: #467179;
+          }
+        }
+        .email-input{
+          label{
+            font-size: 24px;
+            text-align: left;
+            color: #467179;
+            margin-right: 20px;
+          }
+          input[type="text"]{
+            margin: 24px 0 0;
+            color: #194f5b;
+            min-height: 56px;
+            padding: 12px 14px;
+            font-size: 20px;
+            line-height: 28px;
+            font-weight: 400;
+          }
+        }
+        .location{
+          position: relative;
+          overflow: hidden;
+          &:not(:first-child):not(:last-child){
+            margin: 0 10px;
+            @media only screen and (max-width: 767px){
+              margin: 10px 0;
+            }
+          }
+          label{
+            position: relative;
+            z-index: 100;
+            max-width: 200px;
+            min-height: 250px;
+            border: 1px solid #cecece;
+            padding: 20px;
+            transition: 0.3s;
+            cursor: pointer;
+            font-size: 16px !important;
+            font-family: $poppines;
+            &:hover{
+              background-color: #ddd;
+            }
+          }
+          input[type="radio"]:checked ~ label{
+            background-color: #357f9e;
+            color: #fff;
+          }
+          img{
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/**
+* for calender
+ */
+.calendar-box {
+  font-family: $poppines;
+}
+
+.buttons-container {
+  cursor: pointer;
+}
+
+.week {
+  overflow: hidden;
+}
+
+.week.highlight {
+  background: #efefef;
+}
+
+/* weekend */
+.week .day:first-child, .week .day:last-child {
+  /*color: orange;*/
+}
+
+/* sunday */
+.week .day:first-child {
+  /*color: red;*/
+}
+
+.day {
+  display: inline-block;
+  float: left;
+  width: 14.28%;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.day.disabled span {
+  color: #AAA;
+}
+
+/* vertical highlight */
+.week .day.highlight span {
+  /*color: blue;*/
+}
+
+.day.selected span {
+  /*background: orange;*/
+}
+
+.day.today span {
+  font-weight: bold;
+}
+
+.months-container.hidden, .weeks-container.hidden {
+  display: none;
+}
+
+.months-wrapper {
+  overflow: hidden;
+}
+
+.months-wrapper .month {
+  display: inline-block;
+  float: left;
+  width: 25%;
+  text-align: center;
+  cursor: pointer;
+}
+.months-wrapper .month.one-third {
+  width: 33.33%;
+}
+.available-time{
+  .radio-button{
+    display: inline-block;
+    label{
+      padding: 10px 20px;
+      border: 1px solid #ddd;
+      color: #000;
+      cursor: pointer;
+      transition: 0.3s;
+      font-family: $poppines !important;
+      &:hover{
+        background-color: #ddd;
+      }
+    }
+    input[type="radio"]:checked ~ label{
+        background-color: $primary-color;
+        color: #fff;
+    }
+  }
+}
+.calendar-wrapper{
+  .prev-button{
+    color: #000 !important;
+    &:hover{
+      color: #fff !important;
+    }
+  }
+  .next-button{
+    color: #000 !important;
+    &:hover{
+      color: #fff !important;
+    }
+  }
+}
+
+.plugin-default{
+  li{
+    margin-right: 10px;
+    @media only screen and (max-width: 575px){
+      margin-right: 0;
+    }
+    &:last-child{
+      margin-right: 0;
+    }
+    a{
+      color: #194f5b;
+      font-size: 16px;
+      font-family: $poppines;
+      text-transform: uppercase;
+      font-weight: bold;
+      &:hover{
+        color: $primary-color;
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+/**
+* css for admin backend
+ */
+.edit-form{
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    background-color: #fff;
+    margin-top: 20px;
+}
+.edit-form .edit-form-header{
+    font-size: 20px;
+    color: #000;
+    border-bottom: 1px solid #ccc;
+    padding: 20px 50px;
+}
+.edit-form .edit-form-header strong{
+    font-weight: bold;
+}
+.edit-form .edit-form-body{
+    padding: 20px 50px;
+}
+.edit-form .edit-form-body label{
+    display: block;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+.edit-form .edit-form-body input[type="text"]{
+    font-size: 16px;
+    padding: 5px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+.edit-form .edit-form-body select{
+    padding: 5px 20px;
+    font-size: 16px;
+    width: 100%;
+}
+.status-badge{
+    padding: 5px;
+    border-radius: 3px;
+}
+.status-info{
+    background-color: #1687a7;
+    color: #fff;
+}
+.status-primary{
+    background-color: #4a47a3;
+    color: #fff;
+}
+.status-danger{
+    background-color: #fa1e0e;
+    color: #fff;
+}
+.status-success{
+    background-color: #158467;
+    color: #fff;
+}
