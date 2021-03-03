@@ -200,7 +200,7 @@
         var prev_date = new Date();
         prev_date.setDate(prev_date.getDate() - 1);
         $('.calendar-wrapper').updateCalendarOptions({
-            date: prev_date,
+            date: new Date(),
             disable: function(date){
                 return date <= prev_date;
             }
