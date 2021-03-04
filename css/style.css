@@ -11,6 +11,12 @@
 /**
 sass value
  */
+.primary-bg {
+  background-color: #357f9e; }
+  .primary-bg:hover {
+    background-color: #276678;
+    color: #fff; }
+
 .header .back {
   border: none;
   cursor: pointer;

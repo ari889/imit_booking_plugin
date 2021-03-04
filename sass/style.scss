@@ -16,7 +16,15 @@ sass value
 $regular : MessinaSerif-Regular;
 $poppines: 'Poppins', sans-serif;
 $primary-color: #357f9e;
-$secondery-color: #47aed6;
+$secondery-color: #276678;
+
+.primary-bg{
+  background-color: $primary-color;
+  &:hover{
+    background-color: $secondery-color;
+    color: #fff;
+  }
+}
 
 .header{
   .back{

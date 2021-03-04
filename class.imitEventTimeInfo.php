@@ -20,27 +20,43 @@ class ImitEventTime extends WP_List_Table{
             'status' => __('Status', 'imit-booking-form'),
             'created_at' => __('Created at', 'imit-booking-form'),
             'updated_at' => __('Updated at', 'imit-booking-form'),
+            'action' => __('Action', 'imit-booking-form'),
         ];
     }
 
+    /**
+     * @param array|object $item
+     * @return string|void
+     *
+     * for check box
+     */
     function column_cb($item){
         return "<input type='checkbox' value='{$item['id']}' />";
     }
 
-    function column_event_time($item){
-        $nonce = wp_create_nonce('imit_event_edit');
-        $actions = [
-            'edit' => sprintf('<a href="?page=imitMenageEvent&eid=%s&n=%s">%s</a>', $item['id'], $nonce, __('View', 'imit-booking-form')),
-            'delete' => sprintf('<a href="?page=imitMenageEvent&eid=%s&n=%s&action=%s">%s</a>', $item['id'], $nonce, 'delete', __('Delete', 'imit-booking-form')),
-        ];
-        return sprintf('%s %s', $item['event_time'], $this->row_actions($actions));
-    }
-
+    /**
+     * @param array|object $item
+     * @param string $column_name
+     * @return mixed|void
+     */
     function column_default($item, $column_name)
     {
         return $item[$column_name];
     }
 
+    /**
+     * for action column
+     */
+    function column_action($item){
+        $edit = wp_nonce_url(admin_url('admin.php?page=imitMenageEvent&eid='.$item['id']), 'imit_event_edit', 'n');
+        $delete = wp_nonce_url(admin_url('admin.php?page=imitMenageEvent&action=delete&eid='.$item['id']), 'imit_event_edit', 'n');
+        return "<a href='".esc_url($edit)."'>View</a> | <a href='".esc_url($delete)."' style='color:red;'>Delete</a>";
+    }
+
+    /**
+     * @param $item
+     * column status
+     */
     function column_status($item){
         if($item['status'] == '1'){
             echo '<strong class="status-badge status-success">Published</strong>';

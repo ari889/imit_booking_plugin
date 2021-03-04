@@ -20,9 +20,9 @@ class ImitAppointment extends WP_List_Table{
     {
         return [
           'cb' => '<input type="checkbox" />',
-            'braces' => __('Question 1', 'imit-booking-form'),
-            'straighten' => __('Question 2', 'imit-booking-form'),
-            'straightening' => __('Question 3', 'imit-booking-form'),
+//            'braces' => __('Braces', 'imit-booking-form'),
+//            'straighten' => __('Why straighten', 'imit-booking-form'),
+//            'straightening' => __('Thinking time', 'imit-booking-form'),
             'first_name' => __('First name', 'imit-booking-form'),
             'last_name' => __('Last name', 'imit-booking-form'),
             'email' => __('Email', 'imit-booking-form'),
@@ -30,11 +30,12 @@ class ImitAppointment extends WP_List_Table{
             'event_date' => __('Event date', 'imit-booking-form'),
             'event_time' => __('Event time', 'imit-booking-form'),
             'client_cell' => __('Client cell', 'imit-booking-form'),
-            'referred_by' => __('Referred by', 'imit-booking-form'),
-            'referral_name' => __('Referral name', 'imit-booking-form'),
+//            'referred_by' => __('Referred by', 'imit-booking-form'),
+//            'referral_name' => __('Referral name', 'imit-booking-form'),
             'status' => __('Status', 'imit-booking-form'),
-            'created_at' => __('Created at', 'imit-booking-form'),
-            'updated_at' => __('Updated at', 'imit-booking-form'),
+            'action' => __('Action', 'imit-booking-form'),
+//            'created_at' => __('Created at', 'imit-booking-form'),
+//            'updated_at' => __('Updated at', 'imit-booking-form'),
         ];
     }
 
@@ -59,20 +60,6 @@ class ImitAppointment extends WP_List_Table{
     }
 
     /**
-     * @param $item
-     * @return string
-     * for colum braces
-     */
-    function column_braces($item){
-        $nonce = wp_create_nonce('imit_appointment_edit');
-        $actions = [
-          'edit' => sprintf('<a href="?page=imitAppointmentBooking&bid=%s&n=%s">%s</a>', $item['id'], $nonce, __('View', 'imit-booking-form')),
-            'delete' => sprintf('<a href="?page=imitAppointmentBooking&bid=%s&n=%s&action=%s">%s</a>', $item['id'], $nonce, 'delete', __('Delete', 'imit-booking-form'))
-        ];
-        return sprintf('%s %s', $item['braces'], $this->row_actions($actions));
-    }
-
-    /**
      * for view status
      */
     function column_status($item){
@@ -85,6 +72,16 @@ class ImitAppointment extends WP_List_Table{
         }else{
             echo '<strong class="status-badge status-success">Completed</strong>';
         }
+    }
+
+    /**
+     * for action column
+     *
+     */
+    function column_action($item){
+        $edit = wp_nonce_url(admin_url('admin.php?page=imitAppointmentBooking&bid='.$item['id']), 'imit_appointment_edit', 'n');
+        $delete = wp_nonce_url(admin_url('admin.php?page=imitAppointmentBooking&action=delete&bid='.$item['id']), 'imit_appointment_edit', 'n');
+        return "<a href='".esc_url($edit)."'>View</a> | <a href='".esc_url($delete)."' style='color:red;'>Delete</a>";
     }
 
 

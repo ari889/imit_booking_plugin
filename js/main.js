@@ -213,27 +213,30 @@
             let data = $(this).val();
             if(data == 'dentist'){
                 $('#referral_input label').text('Enter the name of dentist/office');
+                $('#referral_input input').attr('placeholder', 'Eg: Jhon doe');
                 $('#referral_input').show('fast');
             }else if(data == 'employer'){
                 $('#referral_input label').text('Enter your company name');
+                $('#referral_input input').attr('placeholder', 'Eg: Smiles for Seattle');
                 $('#referral_input').show('fast');
             }else if(data == 'facebook' || data == 'google' || data == 'instagram' || data == 'mailer' || data == 'yelp' || data == 'friend/family'){
                 $('#referral_input').hide('fast');
                 $('#booking_form input[name="referred_by"]').val('');
             }else if(data == 'radio'){
                 $('#referral_input label').text('Enter radio station');
+                $('#referral_input input').attr('placeholder', 'Eg: 89.0FM');
                 $('#referral_input').show('fast');
             }else if(data == 'wechat'){
                 $('#referral_input label').text('Enter public account name');
-                $('#referral_input').show('fast');
-            }else if(data == 'wechat'){
-                $('#referral_input label').text('Enter public account name');
+                $('#referral_input input').attr('placeholder', 'Public account name');
                 $('#referral_input').show('fast');
             }else if(data == 'event'){
                 $('#referral_input label').text('Enter name of the event');
+                $('#referral_input input').attr('placeholder', 'Enter name of the event');
                 $('#referral_input').show('fast');
             }else if(data == 'other'){
-                $('#referral_input label').text('Enter how you found us');
+                $('#referral_input label').text('How you found us');
+                $('#referral_input input').attr('placeholder', 'How you found us');
                 $('#referral_input').show('fast');
             }
         });
@@ -282,8 +285,10 @@
                        $('#booking_form input[name="referred_by"]').val('');
                        $('#booking_form input[name="cell"]').val('');
                        $('#booking-message8').html('<div class="alert alert-success alert-dismissible fade show" role="alert">\n' +
-                           '  <strong>Success!</strong> Your appintment has been booked.\n' +
-                           '  <button type="button" class="btn btn-white" data-bs-dismiss="alert" aria-label="Close" id="form-close">Ok</button>\n' +
+                           '  Your appointment has been sent successfully....<br/>\n' +
+                           'Our team will confirm your booking soon.<br/>\n' +
+                           'Thanks.\n' +
+                           '  <button type="button" class="btn btn-success d-block" data-bs-dismiss="alert" aria-label="Close" id="form-close">Ok</button>\n' +
                            '</div>').fadeIn('fast');
                        eventDate = new Date();
                        available_time(eventDate);

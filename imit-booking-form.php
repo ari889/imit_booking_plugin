@@ -2,16 +2,17 @@
 
 /**
  * Plugin Name: Imit Booking Form
- * Plugin URI: http://google.com
- * Description: This is a demo plugin
- * Version: 1.0
- * Author: IMIT
+ * Plugin URI: https://smilesforseattle.com
+ * Description: This is a appointment booking plugin with event management system
+ * Version: 2.3.1
+ * Author: Ideasy Corp.
+ * Author URI: https://ideasymind.com
  * Licence: GPLv2 or latest
  * Text Domain: imit-booking-form
  * Domain Path: /Languages/
  */
 
-define("IMIT_DB_VERSION", '1.0');
+define("IMIT_DB_VERSION", '2.3.1');
 require_once 'class.imitBookingInfo.php';
 require_once 'class.imitEventTimeInfo.php';
 
@@ -73,7 +74,7 @@ function imit_init(){
     dbDelta($event_time_table);
 
     add_option("imit_db_version", IMIT_DB_VERSION);
-    add_option("imit_booking_holiday", 'sun');
+    add_option("imit_booking_holiday", json_encode(['sun']));
 }
 
 
@@ -295,7 +296,7 @@ add_shortcode('imit-booking', function(){
 
                 <!--                ========================= page 5 ========================-->
                 <div class="page">
-                    <h3 class="title">Asd, enter your email to create your patient profile.</h3>
+                    <h3 class="title">Please enter your email to see your booking.</h3>
                     <div id="booking-message5"></div>
 
                     <div class="d-flex flex-row justify-content-center align-items-center">
@@ -452,21 +453,28 @@ function imit_available_time(){
     $nonce = $_POST['nonce'];
     $date = sanitize_text_field($_POST['date']);
     $week = strtolower(explode(' ', $date)[0]);
+    $holiday = json_decode(get_option('imit_booking_holiday'));
 
-    if($week !== get_option('imit_booking_holiday')){
+    if(!in_array($week, $holiday)){
         if(wp_verify_nonce($nonce, $action)){
             global $wpdb;
             $result = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}imit_event_table WHERE status = '1' AND event_time NOT IN (SELECT event_time FROM {$wpdb->prefix}imit_appointment_bookings WHERE event_date = '{$date}') AND (status = '1' OR status = '3')", OBJECT);
 
-            foreach($result as $event_time){
-                ?>
-                <div class="radio-button">
-                    <input type="radio" name="event" id="event<?php echo $event_time->id; ?>" class="d-none" value="<?php echo $event_time->event_time; ?>">
-                    <label for="event<?php echo $event_time->id; ?>"><?php echo $event_time->event_time; ?></label>
-                </div>
-                <?php
+            if(count($result) > 0){
+                foreach($result as $event_time){
+                    ?>
+                    <div class="radio-button">
+                        <input type="radio" name="event" id="event<?php echo $event_time->id; ?>" class="d-none" value="<?php echo $event_time->event_time; ?>">
+                        <label for="event<?php echo $event_time->id; ?>"><?php echo $event_time->event_time; ?></label>
+                    </div>
+                    <?php
+                }
+            }else{
+                echo '<p class="text-danger text-center">No available booking</p>';
             }
         }
+    }else{
+        echo '<p class="text-danger text-center">Sorry, we are closed today.</p>';
     }
     die();
 }
@@ -573,7 +581,7 @@ function imit_admin_page(){
     $imitbu->prepare_items();
     ?>
     <div class="wrap">
-        <h2><?php _e('Search by email', 'imit-booking-form') ?></h2>
+        <h4 style="text-align:right;margin-bottom:10px;"><?php _e('Search by email', 'imit-booking-form') ?></h4>
         <form method="GET">
             <?php
             $imitbu->search_box('search', 'imit_search_id');
@@ -737,6 +745,7 @@ add_action('admin_post_imit_add_event_record', function(){
  * booking configuration
  */
 function manage_booking_cog(){
+    $holiday = json_decode(get_option('imit_booking_holiday'));
     ?>
 <h2><?php _e('Settings', 'imit-booking-form');?></h2>
     <?php
@@ -762,16 +771,17 @@ function manage_booking_cog(){
                 ?>
                 <input type="hidden" name="action" value="imit_settings_update">
 
-                <label for=holiday"">Holiday</label>
-                <select name="holiday" id="holiday" style="margin-bottom: 20px;">
-                    <option value="sun" <?php if(get_option('imit_booking_holiday') == 'sun'){echo 'selected';} ?>>Sunday</option>
-                    <option value="mon" <?php if(get_option('imit_booking_holiday') == 'mon'){echo 'selected';} ?>>Monday</option>
-                    <option value="twe" <?php if(get_option('imit_booking_holiday') == 'twe'){echo 'selected';} ?>>Tuesday</option>
-                    <option value="wed" <?php if(get_option('imit_booking_holiday') == 'wed'){echo 'selected';} ?>>Wednesday</option>
-                    <option value="thu" <?php if(get_option('imit_booking_holiday') == 'thu'){echo 'selected';} ?>>Thrusday</option>
-                    <option value="fri" <?php if(get_option('imit_booking_holiday') == 'fri'){echo 'selected';} ?>>Friday</option>
-                    <option value="sat" <?php if(get_option('imit_booking_holiday') == 'sat'){echo 'selected';} ?>>Saturday</option>
+                <label for=holiday"">Select your weekly closed days.</label>
+                <select name="holiday[]" id="holiday" size="7" multiple>
+                    <option value="sun" <?php if(in_array('sun', $holiday)){echo 'selected';} ?>>Sunday</option>
+                    <option value="mon" <?php if(in_array('mon', $holiday)){echo 'selected';} ?>>Monday</option>
+                    <option value="tue" <?php if(in_array('tue', $holiday)){echo 'selected';} ?>>Tuesday</option>
+                    <option value="wed" <?php if(in_array('wed', $holiday)){echo 'selected';} ?>>Wednesday</option>
+                    <option value="thu" <?php if(in_array('thu', $holiday)){echo 'selected';} ?>>Thrusday</option>
+                    <option value="fri" <?php if(in_array('fri', $holiday)){echo 'selected';} ?>>Friday</option>
+                    <option value="sat" <?php if(in_array('sat', $holiday)){echo 'selected';} ?>>Saturday</option>
                 </select>
+                <p>Press <code>CTRL</code> and select multiple closed days.</p>
 
                 <?php
                     submit_button('Update settings');
@@ -789,8 +799,9 @@ function manage_booking_cog(){
 add_action('admin_post_imit_settings_update', function(){
     $nonce = sanitize_text_field($_POST['nonce']);
     if(wp_verify_nonce($nonce,'imit_settings_update')){
-        $holiday = sanitize_text_field($_POST['holiday']);
-        update_option('imit_booking_holiday', $holiday);
+        $holiday = $_POST['holiday'];
+        $holiday_data = json_encode($holiday);
+        update_option('imit_booking_holiday', $holiday_data);
         wp_redirect('admin.php?page=imitBookingCog');
     }
 });
@@ -871,21 +882,21 @@ add_shortcode('imit-manage-my-appointment', function(){
 
                 <!--                ===================================== page 1 ========================-->
                 <div class="page mx-auto w-100">
-                    <h3 class="title">Check your appointment status</h3>
+                    <h3 class="title mt-5">Check your appointment status</h3>
                     <div id="booking-message1"></div>
 
-                    <div class="d-flex flex-md-row flex-column justify-content-center align-items-center">
+                    <div class="d-flex flex-md-row flex-column justify-content-center align-items-center my-4">
                         <div class="input-group" style="max-width: 400px;">
                             <input type="text" class="form-control" name="email" placeholder="Enter email">
-                            <input type="submit" name="submit" value="Check" class="btn btn-success">
+                            <input type="submit" name="submit" value="Check" class="btn primary-bg">
                         </div>
                     </div>
                     <div class="table-responsive mt-3">
                         <table class="table">
                             <thead>
                             <tr>
-                                <th scope="col">Event date</th>
-                                <th scope="col">Event time</th>
+                                <th scope="col">Booking date</th>
+                                <th scope="col">Booking time</th>
                                 <th scope="col">Location</th>
                                 <th scope="col">Status</th>
                             </tr>
