@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Imit Booking Form
  * Plugin URI: https://smilesforseattle.com
- * Description: This is a appointment booking plugin with event management system
+ * Description: This is an appointment booking plugin with event management system
  * Version: 2.3.1
  * Author: Ideasy Corp.
  * Author URI: https://ideasymind.com
@@ -129,6 +129,13 @@ add_action('wp_enqueue_scripts', 'imit_all_scripts');
  */
 
 function imit_theme_setup_init(){
+
+    /**
+     * custom logo
+     */
+
+    add_theme_support('custom-logo');
+    add_theme_support('menus');
     /**
      * make menu location
      */
