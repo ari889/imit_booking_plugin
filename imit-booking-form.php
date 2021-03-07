@@ -4,7 +4,7 @@
  * Plugin Name: Imit Booking Form
  * Plugin URI: https://smilesforseattle.com
  * Description: This is an appointment booking plugin with event management system
- * Version: 2.3.1
+ * Version: 1.2.1
  * Author: Ideasy Corp.
  * Author URI: https://ideasymind.com
  * Licence: GPLv2 or latest
@@ -12,9 +12,10 @@
  * Domain Path: /Languages/
  */
 
-define("IMIT_DB_VERSION", '2.3.1');
+define("IMIT_DB_VERSION", '1.2.1');
 require_once 'class.imitBookingInfo.php';
 require_once 'class.imitEventTimeInfo.php';
+require_once 'class.imitQuestions.php';
 
 /**
  * secure plugin
@@ -39,6 +40,7 @@ function imit_init(){
     global $wpdb;
     $booking_table_name = $wpdb->prefix.'imit_appointment_bookings';
     $event_table_name = $wpdb->prefix.'imit_event_table';
+    $question_table_name = $wpdb->prefix.'imit_booking_questions';
 
     $booking_table = "CREATE TABLE {$booking_table_name} (
             id INT NOT NULL AUTO_INCREMENT,
@@ -63,6 +65,7 @@ function imit_init(){
     $event_time_table = "CREATE TABLE {$event_table_name} (
         id INT NOT NULL AUTO_INCREMENT,
         event_time VARCHAR (250),
+        event_time VARCHAR (250),
         status varchar (250) DEFAULT '1',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -75,6 +78,22 @@ function imit_init(){
 
     add_option("imit_db_version", IMIT_DB_VERSION);
     add_option("imit_booking_holiday", json_encode(['sun']));
+    add_option("imit_booking_receiver_email", get_option('admin_email'));
+
+    if(get_option('imit_db_version') !== IMIT_DB_VERSION){
+        $questions = "CREATE TABLE {$question_table_name} (
+            id INT NOT NULL AUTO_INCREMENT,
+            question VARCHAR (250) NOT NULL,
+            answer VARCHAR (10000) NOT NULL,
+            priority VARCHAR (10) NOT NULL,
+            status VARCHAR (250) DEFAULT '1' NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY(id)
+        )";
+        dbDelta($questions);
+        update_option('imit_db_version', IMIT_DB_VERSION);
+    }
 }
 
 
@@ -154,6 +173,8 @@ add_action('admin_enqueue_scripts', function($hook){
         wp_enqueue_style('imitAppointmentBooking-style', PLUGINS_URL('style.css', __FILE__));
     }else if('appointment-booking_page_imitBookingCog' == $hook){
         wp_enqueue_style('imitAppointmentBooking-style', PLUGINS_URL('style.css', __FILE__));
+    }else if('appointment-booking_page_imitQuestions' == $hook){
+        wp_enqueue_style('imitAppointmentBooking-style', PLUGINS_URL('style.css', __FILE__));
     }
 });
 
@@ -163,6 +184,9 @@ add_action('admin_enqueue_scripts', function($hook){
  */
 add_shortcode('imit-booking', function(){
     ob_start();
+    global $wpdb;
+
+    $questions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}imit_booking_questions WHERE status = '1' ORDER BY priority ASC");
     ?>
     <!--header start-->
     <header class="header">
@@ -204,82 +228,36 @@ add_shortcode('imit-booking', function(){
         <div class="content-area">
             <form action="#" class="text-center d-flex flex-row justify-content-start align-items-center content" id="booking_form">
 
+                <?php
+                $i = 1;
+                foreach($questions as $imitqa){
+                    $answers = json_decode($imitqa->answer);
+                    ?>
+                    <div class="page">
+                        <h3 class="title"><?php echo $imitqa -> question; ?></h3>
+                        <div id="booking-message<?php echo $i; ?>"></div>
 
-                <!--                ===================================== page 1 ========================-->
-                <div class="page">
-                    <h3 class="title">Have you had braces or clear aligners in the past?</h3>
-                    <div id="booking-message1"></div>
-
-                    <div class="d-flex flex-md-row flex-column justify-content-center align-items-center">
-                        <div class="label-button">
-                            <input type="radio" id="yes" name="braces" value="yes" class="d-none" checked>
-                            <label for="yes">Yes</label>
+                        <div class="d-flex flex-md-row flex-column justify-content-center align-items-center">
+                            <?php
+                            $index = 1;
+                            foreach($answers as $imita => $a){
+                                ?>
+                                <div class="label-button">
+                                    <input type="radio" id="answer-<?php echo $i;echo $index; ?>" name="answer-<?php echo $i; ?>" value="<?php echo $a; ?>" class="d-none" <?php if($index == 1){echo 'checked';} ?>>
+                                    <label for="answer-<?php echo $i;echo $index; ?>"><?php echo ucfirst($a); ?></label>
+                                </div>
+                                <?php
+                                $index++;
+                            } ?>
                         </div>
 
-                        <div class="label-button">
-                            <input type="radio" id="no" name="braces" value="no" class="d-none">
-                            <label for="no">No</label>
-                        </div>
+                        <button type="button" class="next border-0" id="next-<?php echo $i; ?>">Next</button>
                     </div>
+                    <?php
+                    $i++;
+                }
 
-                    <p class="subtitle mt-3">Over 50% of our patients have too!</p>
-
-                    <button type="button" class="next border-0" id="next-1">Next</button>
-                </div>
-
-                <!--                ==========================page 2 ==================-->
-                <div class="page">
-                    <h3 class="title">Why do you want to straighten your teeth?</h3>
-                    <div id="booking-message2"></div>
-
-                    <div class="d-flex flex-lg-row flex-column justify-content-center align-items-center">
-                        <div class="label-button">
-                            <input type="radio" id="healthier-teeth" name="straighten" value="Healthier teeth" class="d-none" checked>
-                            <label for="healthier-teeth">Healthier teeth</label>
-                        </div>
-
-                        <div class="label-button">
-                            <input type="radio" id="confidence" name="straighten" value="Confidence" class="d-none">
-                            <label for="confidence">Confidence</label>
-                        </div>
-
-                        <div class="label-button">
-                            <input type="radio" id="event-coming-up" name="straighten" value="Event coming up" class="d-none">
-                            <label for="event-coming-up">Event coming up</label>
-                        </div>
-                    </div>
-
-                    <p class="subtitle mt-3">We want to help you with that!</p>
-
-                    <button type="button" class="next border-0" id="next-2">Next</button>
-                </div>
-
-                <!--                ========================page 3 ======================-->
-                <div class="page">
-                    <h3 class="title">How long have you been thinking about straightening your teeth?</h3>
-                    <div id="booking-message3"></div>
-
-                    <div class="d-flex flex-lg-row flex-column justify-content-center align-items-center">
-                        <div class="label-button">
-                            <input type="radio" id="less-than-a-month" name="straightening" value="Less than a month" class="d-none" checked>
-                            <label for="less-than-a-month">Less than a month</label>
-                        </div>
-
-                        <div class="label-button">
-                            <input type="radio" id="several-months" name="straightening" value="Several months" class="d-none">
-                            <label for="several-months">Several months</label>
-                        </div>
-
-                        <div class="label-button">
-                            <input type="radio" id="more-than-a-year" name="straightening" value="More than a year" class="d-none">
-                            <label for="more-than-a-year">More than a year</label>
-                        </div>
-                    </div>
-
-                    <p class="subtitle mt-3">Lucky for you, our orthodontists have years of experience!</p>
-
-                    <button type="button" class="next border-0" id="next-3">Next</button>
-                </div>
+                ?>
 
                 <!--                ============================= page 4 =========================-->
                 <div class="page">
@@ -409,9 +387,9 @@ function imit_booking(){
         global $wpdb;
         $table_name = $wpdb->prefix.'imit_appointment_bookings';
         $wpdb->insert($table_name, [
-            'braces' => sanitize_text_field($_POST['braces']),
-            'straighten' => sanitize_text_field($_POST['straighten']),
-            'straightening' => sanitize_text_field($_POST['straightening']),
+            'braces' => sanitize_text_field($_POST['answer_1']),
+            'straighten' => sanitize_text_field($_POST['answer_2']),
+            'straightening' => sanitize_text_field($_POST['answer_3']),
             'first_name' => sanitize_text_field($_POST['first_name']),
             'last_name' => sanitize_text_field($_POST['last_name']),
             'email' => sanitize_text_field($_POST['email']),
@@ -444,7 +422,7 @@ function imit_booking(){
         ";
         $header = 'Email from '.$_POST['email'];
 
-        wp_mail('arijitbanarjee889@gmail.com', 'New appintment has been booked.', $admin_message, $header, '');
+        wp_mail(get_option('imit_booking_receiver_email'), 'New appintment has been booked.', $admin_message, $header, '');
     }
 }
 
@@ -761,7 +739,6 @@ function manage_booking_cog(){
     _e(' and for manage appointment type this ', 'imit-booking-form');
     echo '<code>[imit-manage-my-appointment]</code>';
     ?>
-
     <div class="edit-form">
         <div class="edit-form-header">
 
@@ -773,6 +750,9 @@ function manage_booking_cog(){
         </div>
         <div class="edit-form-body">
             <form action="<?php echo admin_url('admin-post.php'); ?>" method="POST">
+                <?php if(isset($_GET['msg'])): ?>
+                    <div class="notice notice-error is-dismissible" style="padding: 10px 20px; margin: 0; margin-bottom: 20px;"><?php echo $_GET['msg']; ?></div>
+                <?php endif; ?>
                 <?php
                 wp_nonce_field('imit_settings_update', 'nonce');
                 ?>
@@ -789,6 +769,11 @@ function manage_booking_cog(){
                     <option value="sat" <?php if(in_array('sat', $holiday)){echo 'selected';} ?>>Saturday</option>
                 </select>
                 <p>Press <code>CTRL</code> and select multiple closed days.</p>
+
+                <label for="receiver_email">Receiver email</label>
+                <input type="text" name="receiver_email" id="receiver_email" placeholder="Eg: admin@gmail.com" value="<?php echo get_option('imit_booking_receiver_email'); ?>" style="margin-bottom: 0;">
+
+                <p>Please enter a valid email</p>
 
                 <?php
                     submit_button('Update settings');
@@ -808,9 +793,154 @@ add_action('admin_post_imit_settings_update', function(){
     if(wp_verify_nonce($nonce,'imit_settings_update')){
         $holiday = $_POST['holiday'];
         $holiday_data = json_encode($holiday);
-        update_option('imit_booking_holiday', $holiday_data);
-        wp_redirect('admin.php?page=imitBookingCog');
+        $receiver_email = sanitize_text_field($_POST['receiver_email']);
+        if(!filter_var($receiver_email, FILTER_VALIDATE_EMAIL)){
+            wp_redirect('admin.php?page=imitBookingCog&&msg=Wrong email');
+        }else if(empty($receiver_email)){
+            wp_redirect('admin.php?page=imitBookingCog&&msg=Please enter an email.');
+        }else{
+            update_option('imit_booking_receiver_email', $receiver_email);
+            update_option('imit_booking_holiday', $holiday_data);
+            wp_redirect('admin.php?page=imitBookingCog');
+        }
     }
+});
+
+/**
+ * for manage all questions
+ */
+function imit_manage_all_questions(){
+    global $wpdb;
+
+    $table_name = $wpdb->prefix.'imit_booking_questions';
+    $qid = $_GET['qid']??0;
+    $qid = sanitize_key($qid);
+    if(isset($_GET['qid'])){
+        if(!isset($_GET['n']) || !wp_verify_nonce($_GET['n'], 'imit_question_add')){
+            wp_die(__('Sorry you are not allowed to do this', 'imit-booking-form'));
+        }
+    }
+    if($qid){
+        if(isset($_GET['action']) && $_GET['action'] == 'delete'){
+            $wpdb->delete("{$table_name}", ['id' => sanitize_key($_GET['qid'])]);
+            $_GET['qid'] = null;
+        }else{
+            $result = $wpdb->get_row("SELECT * FROM {$table_name} WHERE id='{$qid}'");
+            $imita = json_decode($result->answer);
+            $exa = implode($imita, ',');
+        }
+    }
+
+    echo '<h2>Manage all questions</h2>';
+    _e('For booking form type this shortcode', 'imit-booking-form');
+    echo ' <code>[imit-booking]</code> ';
+    _e(' and for manage appointment type this ', 'imit-booking-form');
+    echo '<code>[imit-manage-my-appointment]</code>';
+    if(count($wpdb->get_results("SELECT * FROM {$table_name} WHERE status = '1'")) < 3 || isset($qid)){
+        ?>
+        <div class="edit-form">
+            <div class="edit-form-header">
+
+                <?php
+
+                _e('Add question', 'imit-booking-form');
+
+                ?>
+            </div>
+            <div class="edit-form-body">
+                <strong style="margin-bottom: 20px;display: block;"><?php _e('Note: You can add max 3 question.', 'imit-booking-form'); ?></strong>
+                <form action="<?php echo admin_url('admin-post.php'); ?>" method="POST">
+                    <?php if(isset($_GET['msg'])): ?>
+                        <div class="notice notice-error is-dismissible" style="padding: 10px 20px; margin: 0; margin-bottom: 20px;"><?php echo $_GET['msg']; ?></div>
+                    <?php endif; ?>
+                    <?php
+                    wp_nonce_field('imit_question_add', 'nonce');
+                    ?>
+                    <input type="hidden" name="action" value="imit_add_question">
+
+                    <label for="imit_question">Question</label>
+                    <input type="text" name="imit_question" id="imit_question" placeholder="Eg: Have you had braces or clear aligners in the past?" value="<?php if($qid){echo $result->question;} ?>">
+
+                    <label for="imit_answers">Answers</label>
+                    <input type="text" name="imit_answers" id="imit_answers" placeholder="Eg: yes, no" value="<?php if($qid){echo $exa;} ?>">
+                    <p>Answers must be seperate with coma ( , )</p>
+
+                    <label for="priority">Priority</label>
+                    <input type="text" name="imit_question_priority" id="priority" placeholder="Eg: 1" value="<?php if($qid){echo $result->priority;} ?>">
+                    <p>Priority must be an integer number.</p>
+
+                    <?php if($qid && (!isset($_GET['action']) && $_GET['action'] !== 'delete')){
+                        ?>
+                        <label for="status">Status</label>
+                        <select name="status" id="status">
+                            <option value="1" <?php if($result->status == '1'){echo 'selected';} ?>>Published</option>
+                            <option value="0" <?php if($result->status == '0'){echo 'selected';} ?>>Denied</option>
+                        </select>
+                        <?php
+                    }
+                    if($qid && (!isset($_GET['action']) && $_GET['action'] !== 'delete')){
+                        echo '<input type="hidden" name="id" value="'.$result->id.'" />';
+                        submit_button('Update question');
+                    }else{
+                        submit_button('Add question');
+                    }
+                    ?>
+                </form>
+            </div>
+        </div>
+        <?php
+    }
+
+    $imit_questions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}imit_booking_questions ORDER BY priority ASC", ARRAY_A);
+    $imitqa = new ImitQuestions($imit_questions);
+    $imitqa->prepare_items();
+    $imitqa->display();
+}
+
+/**
+ * add admin question
+ */
+add_action('admin_post_imit_add_question', function(){
+   global $wpdb;
+   $table_name = $wpdb->prefix.'imit_booking_questions';
+   $nonce = sanitize_text_field($_POST['nonce']);
+   if(wp_verify_nonce($nonce, 'imit_question_add')){
+       $question = sanitize_text_field($_POST['imit_question']);
+       $answers = sanitize_text_field($_POST['imit_answers']);
+       $exp_ans = json_encode(explode(',', $answers));
+       $priority = $_POST['imit_question_priority'];
+       if(empty($question) || empty($answers) || empty($priority)){
+           wp_redirect('admin.php?page=imitQuestions&msg=All fields are required.');
+       }else if(preg_match('!^[1-9][0-9]*$!',$priority) == false){
+           wp_redirect('admin.php?page=imitQuestions&msg=Priority must be an unsigned integer number');
+       }else{
+           if($_POST['id']){
+               $status = $_POST['status'];
+               if(count($wpdb->get_results("SELECT * FROM {$table_name} WHERE status = '1'")) > 3){
+                   wp_redirect('admin.php?page=imitQuestions&qid='.$_POST['id'].'&n='.$nonce.'&msg=You can active most 3 question.');
+               }else{
+                   $wpdb->update($table_name, [
+                       'question' => $question,
+                       'answer' => $exp_ans,
+                       'priority' => $priority,
+                       'status' => $status
+                   ], ['id' => $_POST['id']]);
+                   wp_redirect('admin.php?page=imitQuestions&qid='.$_POST['id'].'&n='.$nonce);
+               }
+           }else{
+                if(count($wpdb->get_results("SELECT * FROM {$table_name} WHERE priority = '{$priority}'")) > 0){
+                   wp_redirect('admin.php?page=imitQuestions&&msg=Try different priority.');
+                }else{
+                    $wpdb->insert($table_name, [
+                        'question' => $question,
+                        'answer' => $exp_ans,
+                        'priority' => $priority
+                    ]);
+                    wp_redirect('admin.php?page=imitQuestions');
+                }
+           }
+       }
+   }
 });
 
 
@@ -821,7 +951,7 @@ add_action('admin_menu', function(){
     /**
      * main menu for appintment booking
      */
-    add_menu_page('Appointment booking', 'Appointment booking', 'manage_options', 'imitAppointmentBooking', 'imit_admin_page');
+    add_menu_page('Appointment booking', 'Appointment booking', 'manage_options', 'imitAppointmentBooking', 'imit_admin_page', 'dashicons-calendar-alt');
     /**
      * for event manegement
      */
@@ -830,6 +960,11 @@ add_action('admin_menu', function(){
      * for plugin settings
      */
     add_submenu_page('imitAppointmentBooking', 'Booking option', 'Booking option', 'manage_options', 'imitBookingCog', 'manage_booking_cog');
+
+    /**
+     * for add question
+     */
+    add_submenu_page('imitAppointmentBooking', 'Add question', 'Add question', 'manage_options', 'imitQuestions', 'imit_manage_all_questions');
 });
 
 /**

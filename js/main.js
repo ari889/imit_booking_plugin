@@ -7,8 +7,8 @@
          */
         $(document).on('click', '#next-1', function(e){
             e.preventDefault();
-            let braces = $('#booking_form input[name="braces"]:checked').val();
-            if(typeof (braces) !== 'undefined'){
+            let answer_1 = $('#booking_form input[name="answer-1"]:checked').val();
+            if(typeof (answer_1) !== 'undefined'){
                 $('.content').css('margin-left', '-100%');
                 back = 'back-1';
                 $('#booking-message1').fadeOut('fast');
@@ -25,8 +25,8 @@
          */
         $(document).on('click', '#next-2', function(e){
             e.preventDefault();
-            let straighten = $('#booking_form input[name="straighten"]:checked').val();
-            if(typeof (straighten) !== 'undefined'){
+            let answer_2 = $('#booking_form input[name="answer-2"]:checked').val();
+            if(typeof (answer_2) !== 'undefined'){
                 $('.content').css('margin-left', '-200%');
                 back = 'back-2';
                 $('#booking-message2').fadeOut('fast');
@@ -43,8 +43,8 @@
          */
         $(document).on('click', '#next-3', function(e){
             e.preventDefault();
-            let straightening = $('#booking_form input[name="straightening"]:checked').val();
-            if(typeof (straightening) !== 'undefined'){
+            let answer_3 = $('#booking_form input[name="answer-3"]:checked').val();
+            if(typeof (answer_3) !== 'undefined'){
                 $('.content').css('margin-left', '-300%');
                 back = 'back-3';
                 $('#booking-message3').fadeOut('fast');
@@ -253,9 +253,9 @@
         }
         $(document).on('submit', '#booking_form', function(e){
            e.preventDefault();
-           let braces = $('#booking_form input[name="braces"]:checked').val();
-           let straighten = $('#booking_form input[name="straighten"]:checked').val();
-           let straightening = $('#booking_form input[name="straightening"]:checked').val();
+           let answer_1 = $('#booking_form input[name="answer-1"]:checked').val();
+           let answer_2 = $('#booking_form input[name="answer-2"]:checked').val();
+           let answer_3 = $('#booking_form input[name="answer-3"]:checked').val();
            let first_name = $('#booking_form input[name="first_name"]').val();
            let last_name = $('#booking_form input[name="last_name"]').val();
            let email = $('#booking_form input[name="email"]').val();
@@ -277,7 +277,7 @@
                $.ajax({
                    url: imitPluginData.ajax_url,
                    type: 'POST',
-                   data: {action:'imit_booking', braces:braces, straighten:straighten, straightening:straightening, first_name:first_name, last_name:last_name, email:email, event_time:event_time, referral_name:referral_name, event_date:eventDate, location:location, referred_by:referred_by, cell:cell, nonce:imitPluginData.imit_nonce},
+                   data: {action:'imit_booking', answer_1:answer_1, answer_2:answer_2, answer_3:answer_3, first_name:first_name, last_name:last_name, email:email, event_time:event_time, referral_name:referral_name, event_date:eventDate, location:location, referred_by:referred_by, cell:cell, nonce:imitPluginData.imit_nonce},
                    success:function(data){
                        $('#booking_form input[name="first_name"]').val('');
                        $('#booking_form input[name="last_name"]').val('');
