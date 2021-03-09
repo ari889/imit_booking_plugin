@@ -17,51 +17,63 @@ sass value
     background-color: #276678;
     color: #fff; }
 
-.header .back {
-  border: none;
-  cursor: pointer;
-  background-color: transparent;
-  color: #a1a9ae;
-  transition: 0.3s;
-  text-transform: uppercase;
-  font-family: "Poppins", sans-serif; }
-  .header .back:hover {
-    color: #000; }
-.header .manage {
-  color: #194f5b;
-  font-size: 16px;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-family: "Poppins", sans-serif; }
-  .header .manage i {
-    margin-right: 10px; }
-  .header .manage:hover {
-    text-decoration: none; }
+.header {
+  position: relative;
+  z-index: 1030; }
+  .header .back {
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    color: #a1a9ae;
+    transition: 0.3s;
+    text-transform: uppercase;
+    font-family: "Poppins", sans-serif; }
+    .header .back:hover {
+      color: #000; }
+  .header .manage {
+    color: #194f5b;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-family: "Poppins", sans-serif; }
+    .header .manage i {
+      margin-right: 10px; }
+    .header .manage:hover {
+      text-decoration: none; }
 
 .event-management .content-area {
   overflow: hidden; }
   .event-management .content-area .content {
-    width: 800%;
     transition: margin-left 0.3s ease-in-out; }
-    .event-management .content-area .content .page {
+    .event-management .content-area .content .custom-page {
+      display: none;
       min-height: calc(100vh - 64px);
-      display: flex;
-      justify-content: center;
-      flex-direction: column;
-      align-items: center;
       width: 100%; }
-      .event-management .content-area .content .page .title {
-        font-size: 50px;
+      .event-management .content-area .content .custom-page .page-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 50;
+        min-width: 800px; }
+        @media only screen and (max-width: 839px) {
+          .event-management .content-area .content .custom-page .page-content {
+            min-width: 100%;
+            padding: 0 20px; } }
+      .event-management .content-area .content .custom-page .title {
+        font-size: 40px;
+        max-width: 90%;
+        margin: 0 auto 20px;
         line-height: 60px;
         font-weight: 400;
         font-family: MessinaSerif-Regular !important; }
         @media only screen and (max-width: 443px) {
-          .event-management .content-area .content .page .title {
+          .event-management .content-area .content .custom-page .title {
             font-size: 25px;
             line-height: 30px; } }
-      .event-management .content-area .content .page .label-button label {
-        font-size: 24px;
-        margin: 16px;
+      .event-management .content-area .content .custom-page .label-button label {
+        font-size: 16px;
+        margin: 5px;
         font-weight: 500;
         outline: 0;
         border: 1px solid #cecece;
@@ -71,21 +83,21 @@ sass value
         padding: 10px 50px;
         font-family: "Poppins", sans-serif !important; }
         @media only screen and (max-width: 349px) {
-          .event-management .content-area .content .page .label-button label {
+          .event-management .content-area .content .custom-page .label-button label {
             font-size: 16px;
             padding: 10px 30px; } }
-        .event-management .content-area .content .page .label-button label:hover {
+        .event-management .content-area .content .custom-page .label-button label:hover {
           box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15);
           -webkit-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15);
           -moz-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15); }
-      .event-management .content-area .content .page .label-button input[type="radio"]:checked ~ label {
+      .event-management .content-area .content .custom-page .label-button input[type="radio"]:checked ~ label {
         border: 3px solid #357f9e;
         color: #357f9e; }
-      .event-management .content-area .content .page .subtitle {
+      .event-management .content-area .content .custom-page .subtitle {
         font-size: 16px;
         font-weight: 400;
         font-family: "Poppins", sans-serif !important; }
-      .event-management .content-area .content .page .next {
+      .event-management .content-area .content .custom-page .next {
         color: #fff;
         text-transform: uppercase;
         font-weight: 600;
@@ -99,38 +111,41 @@ sass value
         transition: all .2s;
         padding: 10px 50px;
         font-family: MessinaSerif-Regular !important; }
-        .event-management .content-area .content .page .next:hover {
+        .event-management .content-area .content .custom-page .next:hover {
           box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15);
           -webkit-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15);
           -moz-box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.15); }
-      .event-management .content-area .content .page .text-input {
-        margin: 0 10px; }
-        .event-management .content-area .content .page .text-input label {
-          display: block;
-          font-size: 16px;
-          text-align: left; }
-        .event-management .content-area .content .page .text-input input[type="text"] {
-          margin: 24px 0 0;
-          color: #194f5b;
-          min-height: 56px;
-          padding: 12px 14px;
-          font-size: 20px;
-          line-height: 28px;
-          font-weight: 400;
-          font-family: "Poppins", sans-serif !important; }
-        .event-management .content-area .content .page .text-input select {
-          font-size: 20px;
-          line-height: 28px;
-          margin: 24px 0 0;
-          min-height: 56px;
-          padding: 12px 14px;
-          color: #467179; }
-      .event-management .content-area .content .page .email-input label {
+        @media only screen and (max-width: 470px) {
+          .event-management .content-area .content .custom-page .next {
+            padding: 10px 30px; } }
+      .event-management .content-area .content .custom-page .text-input label {
+        display: block;
+        font-size: 16px;
+        text-align: left;
+        font-family: "Poppins", sans-serif; }
+      .event-management .content-area .content .custom-page .text-input input[type="text"] {
+        margin: 24px 0 0;
+        color: #194f5b;
+        min-height: 56px;
+        padding: 12px 14px;
+        font-size: 20px;
+        line-height: 28px;
+        font-weight: 400;
+        font-family: "Poppins", sans-serif !important;
+        box-sizing: border-box; }
+      .event-management .content-area .content .custom-page .text-input select {
+        font-size: 20px;
+        line-height: 28px;
+        margin: 24px 0 0;
+        min-height: 56px;
+        padding: 12px 14px;
+        color: #467179; }
+      .event-management .content-area .content .custom-page .email-input label {
         font-size: 24px;
         text-align: left;
         color: #467179;
         margin-right: 20px; }
-      .event-management .content-area .content .page .email-input input[type="text"] {
+      .event-management .content-area .content .custom-page .email-input input[type="text"] {
         margin: 24px 0 0;
         color: #194f5b;
         min-height: 56px;
@@ -138,15 +153,15 @@ sass value
         font-size: 20px;
         line-height: 28px;
         font-weight: 400; }
-      .event-management .content-area .content .page .location {
+      .event-management .content-area .content .custom-page .location {
         position: relative;
         overflow: hidden; }
-        .event-management .content-area .content .page .location:not(:first-child):not(:last-child) {
+        .event-management .content-area .content .custom-page .location:not(:first-child):not(:last-child) {
           margin: 0 10px; }
           @media only screen and (max-width: 767px) {
-            .event-management .content-area .content .page .location:not(:first-child):not(:last-child) {
+            .event-management .content-area .content .custom-page .location:not(:first-child):not(:last-child) {
               margin: 10px 0; } }
-        .event-management .content-area .content .page .location label {
+        .event-management .content-area .content .custom-page .location label {
           position: relative;
           z-index: 100;
           max-width: 200px;
@@ -157,12 +172,12 @@ sass value
           cursor: pointer;
           font-size: 16px !important;
           font-family: "Poppins", sans-serif; }
-          .event-management .content-area .content .page .location label:hover {
+          .event-management .content-area .content .custom-page .location label:hover {
             background-color: #ddd; }
-        .event-management .content-area .content .page .location input[type="radio"]:checked ~ label {
+        .event-management .content-area .content .custom-page .location input[type="radio"]:checked ~ label {
           background-color: #357f9e;
           color: #fff; }
-        .event-management .content-area .content .page .location img {
+        .event-management .content-area .content .custom-page .location img {
           position: absolute;
           top: 20px;
           left: 0;

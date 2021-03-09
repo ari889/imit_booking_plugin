@@ -4,7 +4,7 @@
  * Plugin Name: Imit Booking Form
  * Plugin URI: https://smilesforseattle.com
  * Description: This is an appointment booking plugin with event management system
- * Version: 1.2.1
+ * Version: 1.3.4
  * Author: Ideasy Corp.
  * Author URI: https://ideasymind.com
  * Licence: GPLv2 or latest
@@ -12,7 +12,7 @@
  * Domain Path: /Languages/
  */
 
-define("IMIT_DB_VERSION", '1.2.1');
+define("IMIT_DB_VERSION", '1.3.4');
 require_once 'class.imitBookingInfo.php';
 require_once 'class.imitEventTimeInfo.php';
 require_once 'class.imitQuestions.php';
@@ -42,11 +42,11 @@ function imit_init(){
     $event_table_name = $wpdb->prefix.'imit_event_table';
     $question_table_name = $wpdb->prefix.'imit_booking_questions';
 
-    $booking_table = "CREATE TABLE {$booking_table_name} (
+    require_once (ABSPATH."wp-admin/includes/upgrade.php");
+
+    $sql[] = "CREATE TABLE {$booking_table_name} (
             id INT NOT NULL AUTO_INCREMENT,
-            braces VARCHAR (250) NOT NULL,
-            straighten VARCHAR (250) NOT NULL,
-            straightening VARCHAR (250) NOT NULL,
+            answer VARCHAR (1000) NOT NULL,
             first_name VARCHAR (250) NOT NULL,
             last_name VARCHAR (250) NOT NULL,
             email VARCHAR (250) NOT NULL,
@@ -62,26 +62,16 @@ function imit_init(){
             PRIMARY KEY(id)
     );";
 
-    $event_time_table = "CREATE TABLE {$event_table_name} (
+    $sql[] = "CREATE TABLE {$event_table_name} (
         id INT NOT NULL AUTO_INCREMENT,
         event_time VARCHAR (250),
-        event_time VARCHAR (250),
-        status varchar (250) DEFAULT '1',
+        status VARCHAR (250) DEFAULT '1',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY(id)
     )";
 
-    require_once (ABSPATH."wp-admin/includes/upgrade.php");
-    dbDelta($booking_table);
-    dbDelta($event_time_table);
-
-    add_option("imit_db_version", IMIT_DB_VERSION);
-    add_option("imit_booking_holiday", json_encode(['sun']));
-    add_option("imit_booking_receiver_email", get_option('admin_email'));
-
-    if(get_option('imit_db_version') !== IMIT_DB_VERSION){
-        $questions = "CREATE TABLE {$question_table_name} (
+    $sql[] = "CREATE TABLE {$question_table_name} (
             id INT NOT NULL AUTO_INCREMENT,
             question VARCHAR (250) NOT NULL,
             answer VARCHAR (10000) NOT NULL,
@@ -91,7 +81,23 @@ function imit_init(){
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY(id)
         )";
-        dbDelta($questions);
+    dbDelta($sql);
+
+    add_option("imit_db_version", IMIT_DB_VERSION);
+    add_option("imit_booking_holiday", json_encode(['sun']));
+    add_option("imit_booking_receiver_email", get_option('admin_email'));
+
+    /**
+     * add new column
+     */
+    if(get_option('imit_db_version') !== IMIT_DB_VERSION){
+        $new_column[] = "ALTER TABLE {$booking_table_name}
+                              DROP `braces`,
+                              DROP `straighten`,
+                              DROP `straightening`;";
+        $new_column[] = "ALTER TABLE {$wpdb->prefix}imit_appointment_bookings
+                    ADD answer VARCHAR(10000) NOT NULL;";
+        dbDelta($new_column);
         update_option('imit_db_version', IMIT_DB_VERSION);
     }
 }
@@ -138,6 +144,16 @@ function imit_all_scripts(){
     wp_localize_script('imit-main', 'fetchAppointmentStatus', [
        'ajax_url' => admin_url('admin-ajax.php'),
         'imit_nonce' => $check_appointment
+    ]);
+
+    /**
+     * for number of added questions
+     */
+    global $wpdb;
+    $table_name = $wpdb->prefix.'imit_booking_questions';
+    $result = $wpdb->get_results("SELECT * FROM {$table_name}");
+    wp_localize_script('imit-main', 'imitQuestions', [
+       'number' => count($result)
     ]);
 }
 
@@ -226,32 +242,34 @@ add_shortcode('imit-booking', function(){
     <!--    =============== event management form =======================-->
     <section class="event-management">
         <div class="content-area">
-            <form action="#" class="text-center d-flex flex-row justify-content-start align-items-center content" id="booking_form">
+            <form action="#" class="text-center content" id="booking_form" style="/*width: <?php //echo (count($questions) + 5)*100; ?>%*/">
 
                 <?php
                 $i = 1;
                 foreach($questions as $imitqa){
                     $answers = json_decode($imitqa->answer);
                     ?>
-                    <div class="page">
-                        <h3 class="title"><?php echo $imitqa -> question; ?></h3>
-                        <div id="booking-message<?php echo $i; ?>"></div>
+                    <div class="custom-page" id="page-<?php echo $i; ?>" style="<?php if($i == 1){echo 'display: block;';} ?>">
+                        <div class="page-content">
+                            <h3 class="title"><?php echo $imitqa -> question; ?></h3>
+                            <div id="booking-message<?php echo $i; ?>"></div>
 
-                        <div class="d-flex flex-md-row flex-column justify-content-center align-items-center">
-                            <?php
-                            $index = 1;
-                            foreach($answers as $imita => $a){
-                                ?>
-                                <div class="label-button">
-                                    <input type="radio" id="answer-<?php echo $i;echo $index; ?>" name="answer-<?php echo $i; ?>" value="<?php echo $a; ?>" class="d-none" <?php if($index == 1){echo 'checked';} ?>>
-                                    <label for="answer-<?php echo $i;echo $index; ?>"><?php echo ucfirst($a); ?></label>
-                                </div>
+                            <div class="">
                                 <?php
-                                $index++;
-                            } ?>
-                        </div>
+                                $index = 1;
+                                foreach($answers as $imita => $a){
+                                    ?>
+                                    <div class="label-button">
+                                        <input type="radio" id="answer-<?php echo $i;echo $index; ?>" name="answer-<?php echo $i; ?>" value="<?php echo $a; ?>" class="d-none" <?php if($index == 1){echo 'checked';} ?> data-question_id="<?php echo $imitqa->id; ?>">
+                                        <label for="answer-<?php echo $i;echo $index; ?>"><?php echo ucfirst($a); ?></label>
+                                    </div>
+                                    <?php
+                                    $index++;
+                                } ?>
+                            </div>
 
-                        <button type="button" class="next border-0" id="next-<?php echo $i; ?>">Next</button>
+                            <button type="button" class="next border-0" id="next" data-next_page="<?php echo $i + 1; ?>">Next</button>
+                        </div>
                     </div>
                     <?php
                     $i++;
@@ -260,63 +278,68 @@ add_shortcode('imit-booking', function(){
                 ?>
 
                 <!--                ============================= page 4 =========================-->
-                <div class="page">
-                    <h3 class="title">Let’s get to know each other. What’s your name?</h3>
-                    <div id="booking-message4"></div>
+                <div class="custom-page" id="page-<?php echo count($questions) + 1; ?>">
+                    <div class="page-content">
+                        <h3 class="title">Let’s get to know each other. What’s your name?</h3>
+                        <div id="booking-message<?php echo count($questions) + 1; ?>"></div>
 
-                    <div class="d-flex flex-lg-row flex-column justify-content-center align-items-center">
-                        <div class="text-input mt-2">
-                            <label for="first_name">First name</label>
-                            <input type="text" name="first_name" id="first_name" placeholder="First name">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="text-input mt-2">
+                                    <label for="first_name">First name</label>
+                                    <input type="text" name="first_name" id="first_name" placeholder="First name" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="text-input mt-2">
+                                    <label for="last_name">Last name</label>
+                                    <input type="text" name="last_name" id="last_name" placeholder="Last name" class="form-control outline">
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="text-input mt-2">
-                            <label for="last_name">Last name</label>
-                            <input type="text" name="last_name" id="last_name" placeholder="Last name">
-                        </div>
+                        <button type="button" class="next border-0" id="next" data-next_page="<?php echo count($questions) + 2; ?>">Next</button>
                     </div>
-
-                    <button type="button" class="next border-0" id="next-4">Next</button>
                 </div>
 
                 <!--                ========================= page 5 ========================-->
-                <div class="page">
-                    <h3 class="title">Please enter your email to see your booking.</h3>
-                    <div id="booking-message5"></div>
-
-                    <div class="d-flex flex-row justify-content-center align-items-center">
-                        <div class="email-input">
-                            <label for="email">Email</label>
-                            <input type="text" name="email" id="email" placeholder="Email">
-                        </div>
+                <div class="custom-page" id="page-<?php echo count($questions) + 2; ?>">
+                    <div class="page-content">
+                        <h3 class="title">Please enter your email to see your booking.</h3>
+                        <div id="booking-message<?php echo count($questions) + 2; ?>"></div>
+                            <div class="email-input d-flex flex-sm-row flex-column justify-content-center align-items-center">
+                                <label for="email">Email</label>
+                                <input type="text" name="email" id="email" placeholder="Email" class="form-control mt-0">
+                            </div>
+                        <button type="button" class="next border-0" id="next" data-next_page="<?php echo count($questions) + 3; ?>">Next</button>
                     </div>
-
-                    <button type="button" class="next border-0" id="next-5">Next</button>
                 </div>
 
                 <!--                ====================== page 6 ====================-->
-                <div class="page">
-                    <h3 class="title">Choose your location.</h3>
-                    <div id="booking-message6"></div>
+                <div class="custom-page" id="page-<?php echo count($questions) + 3; ?>">
+                    <div class="page-content">
+                        <h3 class="title">Choose your location.</h3>
+                        <div id="booking-message<?php echo count($questions) + 3; ?>"></div>
 
-                    <div class="d-flex flex-md-row flex-column justify-content-center align-items-center">
-                        <div class="location">
-                            <input type="radio" name="location" id="Burien" value="15580 3rd Ave SW Suite 201 Burien, WA 98166" class="d-none" checked>
-                            <label for="Burien"><span>15580 3rd Ave SW Suite 201 Burien, WA 98166</span><img src="<?php echo plugins_url('images/bay-area.png', __FILE__); ?>" alt=""></label>
+                        <div class="d-flex flex-md-row flex-column justify-content-center align-items-center">
+                            <div class="location">
+                                <input type="radio" name="location" id="Burien" value="15580 3rd Ave SW Suite 201 Burien, WA 98166" class="d-none" checked>
+                                <label for="Burien"><span>15580 3rd Ave SW Suite 201 Burien, WA 98166</span><img src="<?php echo plugins_url('images/bay-area.png', __FILE__); ?>" alt=""></label>
+                            </div>
                         </div>
-                    </div>
 
-                    <button type="button" class="next border-0" id="next-6">Next</button>
+                        <button type="button" class="next border-0" id="next" data-next_page="<?php echo count($questions) + 4; ?>">Next</button>
+                    </div>
                 </div>
 
                 <!--                ======================== page 7 =======================-->
-                <div class="page">
-                    <div class="row w-100" style="min-height: calc(100vh - 143px);">
+                <div class="custom-page" id="page-<?php echo count($questions) + 4; ?>">
+                    <div class="row w-100 m-0" style="min-height: calc(100vh - 143px);">
                         <div class="col-md-4 p-0">
                             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2697.3577647435714!2d-122.3396471841319!3d47.46345730584812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5490449ebeaf7f9b%3A0x66af8b2595a4e940!2s15580%203rd%20Ave%20SW%2C%20Burien%2C%20WA%2098166%2C%20USA!5e0!3m2!1sen!2sbd!4v1614327266184!5m2!1sen!2sbd" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                         </div>
                         <div class="col-md-8 p-0">
-                            <div id="booking-message7"></div>
+                            <div id="booking-message<?php echo count($questions) + 4; ?>"></div>
                             <div class="calendar-wrapper"></div>
                             <div class="d-flex justify-content-center">
                                 <div class="spinner-border" role="status" id="available_time_loader" style="display: none;">
@@ -328,44 +351,50 @@ add_shortcode('imit-booking', function(){
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="next border-0" id="next-7">Next</button>
+                    <button type="button" class="next border-0" id="next" data-next_page="<?php echo count($questions) + 5; ?>">Next</button>
                 </div>
 
                 <!--                ============================ page 8 ====================-->
-                <div class="page">
-                    <h3 class="title">One more step to finish your booking.</h3>
-                    <div id="booking-message8"></div>
+                <div class="custom-page" id="page-<?php echo count($questions) + 5; ?>">
+                    <div class="page-content" style="max-width: 500px;">
+                        <h3 class="title">One more step to finish your booking.</h3>
+                        <div id="booking-message<?php echo count($questions) + 5; ?>"></div>
 
-                    <div class="d-flex flex-lg-row flex-column justify-content-center align-items-center">
-                        <div class="text-input mt-2">
-                            <label for="cell">Phone number</label>
-                            <input type="text" name="cell" id="cell" placeholder="Phone number">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="text-input mt-2 w-100">
+                                    <label for="cell">Phone number</label>
+                                    <input type="text" name="cell" id="cell" placeholder="Phone number" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="text-input mt-2 w-100">
+                                    <label for="referral_name" class="w-100">How did you find us?</label>
+                                    <select name="referral_name" id="referral_name" class="form-select">
+                                        <option value="">--Select--</option>
+                                        <option value="dentist">Dentist</option>
+                                        <option value="employer">Employer</option>
+                                        <option value="facebook">Facebook</option>
+                                        <option value="friend/family">Friend/Family</option>
+                                        <option value="google">Google</option>
+                                        <option value="instagram">Instagram</option>
+                                        <option value="mailer">Mailer</option>
+                                        <option value="radio">Radio</option>
+                                        <option value="wechat">weChat</option>
+                                        <option value="yelp">Yelp</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-input mt-2" id="referral_input">
+                            <label for="name-event">Enter name of the event</label>
+                            <input type="text" name="referred_by" id="name-event" placeholder="Enter name of the event" class="form-control">
                         </div>
 
-                        <div class="text-input mt-2">
-                            <label for="last_name">How did you find us?</label>
-                            <select name="referral_name" id="">
-                                <option value="">--Select--</option>
-                                <option value="dentist">Dentist</option>
-                                <option value="employer">Employer</option>
-                                <option value="facebook">Facebook</option>
-                                <option value="friend/family">Friend/Family</option>
-                                <option value="google">Google</option>
-                                <option value="instagram">Instagram</option>
-                                <option value="mailer">Mailer</option>
-                                <option value="radio">Radio</option>
-                                <option value="wechat">weChat</option>
-                                <option value="yelp">Yelp</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
+                        <button type="submit" class="next border-0" id="submit">Submit</button>
                     </div>
-                    <div class="text-input mt-2" id="referral_input">
-                        <label for="name-event">Enter name of the event</label>
-                        <input type="text" name="referred_by" id="name-event" placeholder="Enter name of the event">
-                    </div>
-
-                    <button type="submit" class="next border-0" id="submit">Submit</button>
                 </div>
 
 
@@ -387,9 +416,7 @@ function imit_booking(){
         global $wpdb;
         $table_name = $wpdb->prefix.'imit_appointment_bookings';
         $wpdb->insert($table_name, [
-            'braces' => sanitize_text_field($_POST['answer_1']),
-            'straighten' => sanitize_text_field($_POST['answer_2']),
-            'straightening' => sanitize_text_field($_POST['answer_3']),
+            'answer' => sanitize_text_field(json_encode($_POST['answer'])),
             'first_name' => sanitize_text_field($_POST['first_name']),
             'last_name' => sanitize_text_field($_POST['last_name']),
             'email' => sanitize_text_field($_POST['email']),
@@ -515,14 +542,34 @@ function imit_admin_page(){
 
                         <input type="hidden" name="action" value="imit_update_client_status">
 
-                        <p><strong>Question:</strong> Have you had braces or clear aligners in the past?</p>
-                        <p><strong>Answer:</strong> <?php if($id)echo ucfirst($result->braces); ?></p>
+                        <?php
+                        $answers = json_decode($result->answer);
+                        foreach($answers as $answer => $key){
+                            $data = explode(',', $key);
+                            $question_answer = $data[0];
+                            $question_id = end($data);
 
-                        <p><strong>Question:</strong> Why do you want to straighten your teeth?</p>
-                        <p><strong>Answer:</strong> <?php if($id)echo ucfirst($result->straighten); ?></p>
+                            $question_table = $wpdb->prefix.'imit_booking_questions';
 
-                        <p><strong>Question:</strong> How long have you been thinking about straightening your teeth?</p>
-                        <p><strong>Answer:</strong> <?php if($id)echo ucfirst($result->straightening); ?></p>
+                            $question_text = $wpdb->get_row("SELECT question FROM {$question_table} WHERE id = '{$question_id}'");
+
+                            ?>
+                            <p><strong>Question:</strong> <?php echo $question_text->question; ?></p>
+                            <p><strong>Answer:</strong> <?php if($id)echo ucfirst($question_answer); ?></p>
+                            <?php
+
+                        }
+
+                        ?>
+
+<!--                        <p><strong>Question:</strong> Have you had braces or clear aligners in the past?</p>-->
+<!--                        <p><strong>Answer:</strong> --><?php //if($id)echo ucfirst($result->braces); ?><!--</p>-->
+<!---->
+<!--                        <p><strong>Question:</strong> Why do you want to straighten your teeth?</p>-->
+<!--                        <p><strong>Answer:</strong> --><?php //if($id)echo ucfirst($result->straighten); ?><!--</p>-->
+<!---->
+<!--                        <p><strong>Question:</strong> How long have you been thinking about straightening your teeth?</p>-->
+<!--                        <p><strong>Answer:</strong> --><?php //if($id)echo ucfirst($result->straightening); ?><!--</p>-->
 
                         <p><strong>Email:</strong> <a href="mailto:<?php echo $result->email; ?>"><?php echo $result->email; ?></a></p>
 
@@ -836,60 +883,57 @@ function imit_manage_all_questions(){
     echo ' <code>[imit-booking]</code> ';
     _e(' and for manage appointment type this ', 'imit-booking-form');
     echo '<code>[imit-manage-my-appointment]</code>';
-    if(count($wpdb->get_results("SELECT * FROM {$table_name} WHERE status = '1'")) < 3 || isset($qid)){
-        ?>
-        <div class="edit-form">
-            <div class="edit-form-header">
+    ?>
+    <div class="edit-form">
+        <div class="edit-form-header">
 
-                <?php
+            <?php
 
-                _e('Add question', 'imit-booking-form');
+            _e('Add question', 'imit-booking-form');
 
-                ?>
-            </div>
-            <div class="edit-form-body">
-                <strong style="margin-bottom: 20px;display: block;"><?php _e('Note: You can add max 3 question.', 'imit-booking-form'); ?></strong>
-                <form action="<?php echo admin_url('admin-post.php'); ?>" method="POST">
-                    <?php if(isset($_GET['msg'])): ?>
-                        <div class="notice notice-error is-dismissible" style="padding: 10px 20px; margin: 0; margin-bottom: 20px;"><?php echo $_GET['msg']; ?></div>
-                    <?php endif; ?>
-                    <?php
-                    wp_nonce_field('imit_question_add', 'nonce');
-                    ?>
-                    <input type="hidden" name="action" value="imit_add_question">
-
-                    <label for="imit_question">Question</label>
-                    <input type="text" name="imit_question" id="imit_question" placeholder="Eg: Have you had braces or clear aligners in the past?" value="<?php if($qid){echo $result->question;} ?>">
-
-                    <label for="imit_answers">Answers</label>
-                    <input type="text" name="imit_answers" id="imit_answers" placeholder="Eg: yes, no" value="<?php if($qid){echo $exa;} ?>">
-                    <p>Answers must be seperate with coma ( , )</p>
-
-                    <label for="priority">Priority</label>
-                    <input type="text" name="imit_question_priority" id="priority" placeholder="Eg: 1" value="<?php if($qid){echo $result->priority;} ?>">
-                    <p>Priority must be an integer number.</p>
-
-                    <?php if($qid && (!isset($_GET['action']) && $_GET['action'] !== 'delete')){
-                        ?>
-                        <label for="status">Status</label>
-                        <select name="status" id="status">
-                            <option value="1" <?php if($result->status == '1'){echo 'selected';} ?>>Published</option>
-                            <option value="0" <?php if($result->status == '0'){echo 'selected';} ?>>Denied</option>
-                        </select>
-                        <?php
-                    }
-                    if($qid && (!isset($_GET['action']) && $_GET['action'] !== 'delete')){
-                        echo '<input type="hidden" name="id" value="'.$result->id.'" />';
-                        submit_button('Update question');
-                    }else{
-                        submit_button('Add question');
-                    }
-                    ?>
-                </form>
-            </div>
+            ?>
         </div>
-        <?php
-    }
+        <div class="edit-form-body">
+            <form action="<?php echo admin_url('admin-post.php'); ?>" method="POST">
+                <?php if(isset($_GET['msg'])): ?>
+                    <div class="notice notice-error is-dismissible" style="padding: 10px 20px; margin: 0; margin-bottom: 20px;"><?php echo $_GET['msg']; ?></div>
+                <?php endif; ?>
+                <?php
+                wp_nonce_field('imit_question_add', 'nonce');
+                ?>
+                <input type="hidden" name="action" value="imit_add_question">
+
+                <label for="imit_question">Question</label>
+                <input type="text" name="imit_question" id="imit_question" placeholder="Eg: Have you had braces or clear aligners in the past?" value="<?php if($qid){echo $result->question;} ?>">
+
+                <label for="imit_answers">Answers</label>
+                <input type="text" name="imit_answers" id="imit_answers" placeholder="Eg: yes, no" value="<?php if($qid){echo $exa;} ?>">
+                <p>Answers must be seperate with coma ( , )</p>
+
+                <label for="priority">Priority</label>
+                <input type="text" name="imit_question_priority" id="priority" placeholder="Eg: 1" value="<?php if($qid){echo $result->priority;} ?>">
+                <p>Priority must be an integer number.</p>
+
+                <?php if($qid && (!isset($_GET['action']) && $_GET['action'] !== 'delete')){
+                    ?>
+                    <label for="status">Status</label>
+                    <select name="status" id="status">
+                        <option value="1" <?php if($result->status == '1'){echo 'selected';} ?>>Published</option>
+                        <option value="0" <?php if($result->status == '0'){echo 'selected';} ?>>Denied</option>
+                    </select>
+                    <?php
+                }
+                if($qid && (!isset($_GET['action']) && $_GET['action'] !== 'delete')){
+                    echo '<input type="hidden" name="id" value="'.$result->id.'" />';
+                    submit_button('Update question');
+                }else{
+                    submit_button('Add question');
+                }
+                ?>
+            </form>
+        </div>
+    </div>
+    <?php
 
     $imit_questions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}imit_booking_questions ORDER BY priority ASC", ARRAY_A);
     $imitqa = new ImitQuestions($imit_questions);
@@ -916,17 +960,13 @@ add_action('admin_post_imit_add_question', function(){
        }else{
            if($_POST['id']){
                $status = $_POST['status'];
-               if(count($wpdb->get_results("SELECT * FROM {$table_name} WHERE status = '1'")) > 3){
-                   wp_redirect('admin.php?page=imitQuestions&qid='.$_POST['id'].'&n='.$nonce.'&msg=You can active most 3 question.');
-               }else{
-                   $wpdb->update($table_name, [
-                       'question' => $question,
-                       'answer' => $exp_ans,
-                       'priority' => $priority,
-                       'status' => $status
-                   ], ['id' => $_POST['id']]);
-                   wp_redirect('admin.php?page=imitQuestions&qid='.$_POST['id'].'&n='.$nonce);
-               }
+               $wpdb->update($table_name, [
+                   'question' => $question,
+                   'answer' => $exp_ans,
+                   'priority' => $priority,
+                   'status' => $status
+               ], ['id' => $_POST['id']]);
+               wp_redirect('admin.php?page=imitQuestions&qid='.$_POST['id'].'&n='.$nonce);
            }else{
                 if(count($wpdb->get_results("SELECT * FROM {$table_name} WHERE priority = '{$priority}'")) > 0){
                    wp_redirect('admin.php?page=imitQuestions&&msg=Try different priority.');

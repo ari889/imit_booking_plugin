@@ -27,6 +27,8 @@ $secondery-color: #276678;
 }
 
 .header{
+  position: relative;
+  z-index: 1030;
   .back{
     border: none;
     cursor: pointer;
@@ -58,17 +60,27 @@ $secondery-color: #276678;
   .content-area{
     overflow: hidden;
     .content{
-      width: 800%;
       transition: margin-left 0.3s ease-in-out;
-      .page{
+      .custom-page{
+        display: none;
         min-height: calc(100vh - 64px);
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
         width: 100%;
+        .page-content{
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 50;
+          min-width: 800px;
+          @media only screen and (max-width: 839px){
+            min-width: 100%;
+            padding: 0 20px;
+          }
+        }
         .title{
-          font-size: 50px;
+          font-size: 40px;
+          max-width: 90%;
+          margin: 0 auto 20px;
           line-height: 60px;
           font-weight: 400;
           font-family: $regular !important;
@@ -79,8 +91,8 @@ $secondery-color: #276678;
         }
         .label-button{
           label{
-            font-size: 24px;
-            margin: 16px;
+            font-size: 16px;
+            margin: 5px;
             font-weight: 500;
             outline: 0;
             border: 1px solid #cecece;
@@ -128,13 +140,16 @@ $secondery-color: #276678;
             -webkit-box-shadow: 4px 4px 5px 0px rgba(0,0,0,0.15);
             -moz-box-shadow: 4px 4px 5px 0px rgba(0,0,0,0.15);
           }
+          @media only screen and (max-width: 470px){
+            padding: 10px 30px;
+          }
         }
         .text-input{
-          margin: 0 10px;
           label{
             display: block;
             font-size: 16px;
             text-align: left;
+            font-family: $poppines;
           }
           input[type="text"]{
             margin: 24px 0 0;
@@ -145,6 +160,7 @@ $secondery-color: #276678;
             line-height: 28px;
             font-weight: 400;
             font-family: $poppines !important;
+            box-sizing: border-box;
           }
           select{
             font-size: 20px;

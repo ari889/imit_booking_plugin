@@ -1,140 +1,47 @@
 (function($){
     $(document).ready(function(){
-        let back;
+        let back = 0;
 
-        /**
-         * if user click next at page 1 next button
-         */
-        $(document).on('click', '#next-1', function(e){
+        $(document).on('click', '#next', function(e){
             e.preventDefault();
-            let answer_1 = $('#booking_form input[name="answer-1"]:checked').val();
-            if(typeof (answer_1) !== 'undefined'){
-                $('.content').css('margin-left', '-100%');
-                back = 'back-1';
-                $('#booking-message1').fadeOut('fast');
-            }else{
-                $('#booking-message1').html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
-                    '  <strong>Warning!</strong> Please select your answer.\n' +
-                    '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\n' +
-                    '</div>').fadeIn('fast');
-            }
-        });
-
-        /**
-         * if user click next at page 2 next button
-         */
-        $(document).on('click', '#next-2', function(e){
-            e.preventDefault();
-            let answer_2 = $('#booking_form input[name="answer-2"]:checked').val();
-            if(typeof (answer_2) !== 'undefined'){
-                $('.content').css('margin-left', '-200%');
-                back = 'back-2';
-                $('#booking-message2').fadeOut('fast');
-            }else{
-                $('#booking-message2').html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
-                    '  <strong>Warning!</strong> Please select your answer.\n' +
-                    '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\n' +
-                    '</div>').fadeIn('fast');
-            }
-        });
-
-        /**
-         * if user click next at page 4 next button
-         */
-        $(document).on('click', '#next-3', function(e){
-            e.preventDefault();
-            let answer_3 = $('#booking_form input[name="answer-3"]:checked').val();
-            if(typeof (answer_3) !== 'undefined'){
-                $('.content').css('margin-left', '-300%');
-                back = 'back-3';
-                $('#booking-message3').fadeOut('fast');
-            }else{
-                $('#booking-message3').html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
-                    '  <strong>Warning!</strong> Please select your answer.\n' +
-                    '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\n' +
-                    '</div>').fadeIn('fast');
-            }
-
-        });
-
-        /**
-         * if user click next at page 4 next button
-         */
-        $(document).on('click', '#next-4', function(e){
-            e.preventDefault();
+            let next_page = $(this).data('next_page');
             let first_name = $('#booking_form input[name="first_name"]').val();
             let last_name = $('#booking_form input[name="last_name"]').val();
-            if(first_name !== '' && last_name !== ''){
-                $('.content').css('margin-left', '-400%');
-                back = 'back-4';
-                $('#booking-message4').fadeOut('fast');
-            }else{
-                $('#booking-message4').html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
+            let email = $('#booking_form input[name="email"]').val();
+            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            let location = $('#booking_form input[name="location"]:checked').val();
+            let event = $('#booking_form input[name="event"]:checked').val();
+            if(next_page === (parseInt(imitQuestions.number) + 2) && (first_name == '' || last_name == '')){
+                $('#booking-message'+(parseInt(imitQuestions.number) + 1)).html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
                     '  <strong>Warning!</strong> All fields are required.\n' +
                     '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\n' +
                     '</div>').fadeIn('fast');
-            }
-        });
-
-        /**
-         * if user click next at page 5 next button
-         */
-        $(document).on('click', '#next-5', function(e){
-            e.preventDefault();
-
-            let email = $('#booking_form input[name="email"]').val();
-            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            if(email == ''){
-                $('#booking-message5').html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
-                    '  <strong>Warning!</strong> Email required.\n' +
+            }else if(next_page === (parseInt(imitQuestions.number) + 3)&& email == ''){
+                $('#booking-message'+(parseInt(imitQuestions.number) + 2)).html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
+                    '  <strong>Warning!</strong> Please enter a valid email.\n' +
                     '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\n' +
                     '</div>').fadeIn('fast');
-            }else if(re.test(String(email).toLowerCase()) == false){
-                $('#booking-message5').html('<div class="alert alert-danger alert-dismissible fade show" role="alert">\n' +
+            }else if(next_page === (parseInt(imitQuestions.number) + 3) && re.test(String(email).toLowerCase()) == false){
+                $('#booking-message'+(parseInt(imitQuestions.number) + 2)).html('<div class="alert alert-danger alert-dismissible fade show" role="alert">\n' +
                     '  <strong>Stop!</strong> Invalid email.\n' +
                     '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\n' +
                     '</div>').fadeIn('fast');
-            }else{
-                $('.content').css('margin-left', '-500%');
-                back = 'back-5';
-                $('#booking-message5').fadeOut('fast');
-            }
-        });
-
-        /**
-         * if user click next at page 6 next button
-         */
-        $(document).on('click', '#next-6', function(e){
-            e.preventDefault();
-            let location = $('#booking_form input[name="location"]:checked').val();
-            if(typeof (location) !== 'undefined'){
-                $('.content').css('margin-left', '-600%');
-                back = 'back-6';
-                $('#booking-message67').fadeOut('fast');
-            }else{
-                $('#booking-message67').html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
-                    '  <strong>Warning!</strong> Please select location.\n' +
+            }else if(next_page === (parseInt(imitQuestions.number) + 4) && typeof (location) == 'undefined'){
+                $('#booking-message'+(parseInt(imitQuestions.number) + 3)).html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
+                    '  <strong>Warning!</strong> Location required.\n' +
                     '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\n' +
                     '</div>').fadeIn('fast');
+            }else if(next_page === (parseInt(imitQuestions.number) + 5) && typeof (event) == 'undefined'){
+                $('#booking-message'+(parseInt(imitQuestions.number) + 4)).html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
+                    '  <strong>Warning!</strong> Event required.\n' +
+                    '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\n' +
+                    '</div>').fadeIn('fast');
+            }else{
+                $('.alert').fadeOut('fast');
+                $('.custom-page').hide();
+                $('#page-'+next_page).fadeIn();
+                back = next_page - 1;
             }
-        });
-
-        /**
-         * if user click next at page 7 next button
-         */
-        $(document).on('click', '#next-7', function(e){
-            e.preventDefault();
-             let event = $('#booking_form input[name="event"]:checked').val();
-             if(typeof (event) !== 'undefined'){
-                 $('.content').css('margin-left', '-700%');
-                 back = 'back-7';
-                 $('#booking-message7').fadeOut('fast');
-             }else{
-                 $('#booking-message7').html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
-                     '  <strong>Warning!</strong> Please select an event.\n' +
-                     '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\n' +
-                     '</div>').fadeIn('fast');
-             }
         });
 
         /**
@@ -142,29 +49,13 @@
          */
         $(document).on('click', '.back', function(e){
             e.preventDefault();
-            if(back == 'back-1'){
-                $('.content').css('margin-left', '0%');
-            }else if(back == 'back-2'){
-                $('.content').css('margin-left', '-100%');
-                back = 'back-1';
-            }else if(back == 'back-3'){
-                $('.content').css('margin-left', '-200%');
-                back = 'back-2';
-            }else if(back == 'back-4'){
-                $('.content').css('margin-left', '-300%');
-                back = 'back-3';
-            }else if(back == 'back-5'){
-                $('.content').css('margin-left', '-400%');
-                back = 'back-4';
-            }else if(back == 'back-6'){
-                $('.content').css('margin-left', '-500%');
-                back = 'back-5';
-            }else if(back == 'back-7'){
-                $('.content').css('margin-left', '-600%');
-                back = 'back-6';
-            }else{
-                $('.content').css('margin-left', '0%');
-                back = 'back-1';
+            if(back != 0){
+                $('.custom-page').hide();
+                $('#page-'+back).fadeIn();
+            }
+            console.log(back);
+            if(back > 0){
+                back = back - 1;
             }
         });
 
@@ -253,9 +144,10 @@
         }
         $(document).on('submit', '#booking_form', function(e){
            e.preventDefault();
-           let answer_1 = $('#booking_form input[name="answer-1"]:checked').val();
-           let answer_2 = $('#booking_form input[name="answer-2"]:checked').val();
-           let answer_3 = $('#booking_form input[name="answer-3"]:checked').val();
+           let answer = [];
+            for(j=1;j<= imitQuestions.number; j++){
+                answer.push($('#booking_form input[name="answer-'+j+'"]:checked').val()+','+$('#booking_form input[name="answer-'+j+'"]').data('question_id'));
+            }
            let first_name = $('#booking_form input[name="first_name"]').val();
            let last_name = $('#booking_form input[name="last_name"]').val();
            let email = $('#booking_form input[name="email"]').val();
@@ -265,7 +157,7 @@
            let referred_by = $('#booking_form input[name="referred_by"]').val();
            let cell = $('#booking_form input[name="cell"]').val();
            if(referral_name == '' || cell == ''){
-               $('#booking-message8').html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
+               $('#booking-message'+(parseInt(imitQuestions.number) + 5)).html('<div class="alert alert-warning alert-dismissible fade show" role="alert">\n' +
                    '  <strong>Warning!</strong> Please put phone number and select a referral.\n' +
                    '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\n' +
                    '</div>').fadeIn('fast');
@@ -277,14 +169,14 @@
                $.ajax({
                    url: imitPluginData.ajax_url,
                    type: 'POST',
-                   data: {action:'imit_booking', answer_1:answer_1, answer_2:answer_2, answer_3:answer_3, first_name:first_name, last_name:last_name, email:email, event_time:event_time, referral_name:referral_name, event_date:eventDate, location:location, referred_by:referred_by, cell:cell, nonce:imitPluginData.imit_nonce},
+                   data: {action:'imit_booking', answer:answer, first_name:first_name, last_name:last_name, email:email, event_time:event_time, referral_name:referral_name, event_date:eventDate, location:location, referred_by:referred_by, cell:cell, nonce:imitPluginData.imit_nonce},
                    success:function(data){
                        $('#booking_form input[name="first_name"]').val('');
                        $('#booking_form input[name="last_name"]').val('');
                        $('#booking_form input[name="email"]').val('');
                        $('#booking_form input[name="referred_by"]').val('');
                        $('#booking_form input[name="cell"]').val('');
-                       $('#booking-message8').html('<div class="alert alert-success alert-dismissible fade show" role="alert">\n' +
+                       $('#booking-message'+(parseInt(imitQuestions.number) + 5)).html('<div class="alert alert-success alert-dismissible fade show" role="alert">\n' +
                            '  Your appointment has been sent successfully....<br/>\n' +
                            'Our team will confirm your booking soon.<br/>\n' +
                            'Thanks.\n' +
